@@ -12,14 +12,20 @@ writing a new cartridge; the engine never changes.
 > Principle: **if it can't be run and measured, it isn't done.** Acceptance is a behavioral
 > number, not a resemblance. The agent contract is [`HANDOFF.md`](./HANDOFF.md).
 
-## Two axes
+## Three axes
 - **Efficacy** (north star) — when invoked, does the skill *behave* well? (recall of planted
   flaws, precision, structure, refusal on off-domain). Deterministic, scored by `engine/score.py`.
 - **Fidelity** (diagnostic) — does the skill's content *match the source*, across two hops
   (source → distillation → skill)? Vocab presence is deterministic; accuracy/no-distortion is a
   grounded judge that must quote the source.
+- **Craft** (the skill file itself) — does `SKILL.md`, *as written*, **codify the craft it applies**?
+  Deterministic static checks — vocab, output contract, diagnostic framework, source grounding
+  (HARD); refusal instruction, worked example (advisory). Zero model cost, machine-readable for
+  agents (`engine/craft.py --json`): hand an agent the scorecard instead of asking it to read the
+  skill and fuzzily judge "is this well-crafted?"
 
-They fail independently: a skill can behave well while misquoting its source. Check both.
+They fail independently: a skill can behave well, misquote its source, *and* fail to codify its own
+craft. Check all three.
 
 ## Layout
 ```
@@ -113,6 +119,8 @@ python3 engine/gate.py --selftest cartridges/ousterhout # NEGATIVE CONTROL: gate
                                                          # skill and SHIP the real one (else it is vacuous)
 python3 engine/gate_durability.py cartridges/ousterhout # SELF-DURABILITY: --selftest must itself catch a
                                                          # neutered gate (mutate -> run -> restore; CF-067)
+python3 engine/craft.py     cartridges/ousterhout        # CRAFT axis: does SKILL.md codify the craft? (table)
+python3 engine/craft.py     cartridges/ousterhout --json # machine-readable craft scorecard (for agents)
 ```
 `gate_durability.py` closes the last loop: `--selftest` proves the gate isn't vacuous, and this proves
 `--selftest` isn't vacuous — it mutates `gate.py`'s decision logic (always-SHIP; drop the efficacy

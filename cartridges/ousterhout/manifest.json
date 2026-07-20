@@ -94,5 +94,39 @@
     "closes": "CF-068 \u2014 bar was previously authored from the proxy before the book was in hand",
     "rule": "fidelity criteria are derived from the primary source, never a distillation"
   },
-  "skill_file_provenance": "vendored byte-faithful snapshot of ~/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md (see skill/PROVENANCE.md). Engine does not score from it; preflight requires it present (self-containment)."
+  "skill_file_provenance": "vendored byte-faithful snapshot of ~/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md (see skill/PROVENANCE.md). Engine does not score from it; preflight requires it present (self-containment).",
+  "craft": {
+    "framework_terms": [
+      "change amplification",
+      "cognitive load",
+      "unknown unknowns"
+    ],
+    "source_markers": [
+      "philosophy of software design",
+      "reference",
+      "distillation",
+      "book-verified"
+    ],
+    "refusal_markers": [
+      "if no artifact",
+      "if the user provides no",
+      "if nothing",
+      "no artifact",
+      "without an artifact",
+      "ask for the artifact",
+      "request the missing",
+      "do not fabricate",
+      "don't invent",
+      "decline to",
+      "insufficient input",
+      "nothing to review",
+      "no design doc",
+      "if the input is empty"
+    ],
+    "example_markers": [
+      "## Example",
+      "Example Invocation",
+      "**PM:**"
+    ]
+  }
 }

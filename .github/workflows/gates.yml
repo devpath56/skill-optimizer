@@ -29,6 +29,12 @@ jobs:
       - name: gate self-durability (--selftest must catch a neutered gate)
         run: python3 engine/gate_durability.py cartridges/ousterhout
 
+      - name: craft axis (skill file codifies the craft; HARD checks block)
+        run: python3 engine/craft.py cartridges/ousterhout
+
+      - name: craft negative control (--selftest must catch a degraded skill)
+        run: python3 engine/craft.py cartridges/ousterhout --selftest
+
       - name: truthfulness gate (RG + T1 + T2 + T4, fail-closed)
         run: python3 cartridges/ousterhout/truthfulness/gate.py cartridges/ousterhout/truthfulness
 
