@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so the co-mutation guard can diff against main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -34,6 +36,14 @@ jobs:
 
       - name: craft negative control (--selftest must catch a degraded skill)
         run: python3 engine/craft.py cartridges/ousterhout --selftest
+
+      - name: co-mutation guard selftest (governance logic is non-vacuous)
+        run: python3 engine/comutation_guard.py cartridges/ousterhout --selftest
+
+      - name: co-mutation guard (skill and bar must not co-mutate un-ratified)
+        run: |
+          git fetch origin main --depth=1 || true
+          python3 engine/comutation_guard.py cartridges/ousterhout --range origin/main...HEAD
 
       - name: truthfulness gate (RG + T1 + T2 + T4, fail-closed)
         run: python3 cartridges/ousterhout/truthfulness/gate.py cartridges/ousterhout/truthfulness

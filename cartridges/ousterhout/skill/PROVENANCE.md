@@ -1,11 +1,20 @@
 # Vendored skill-under-test — provenance
 
-`SKILL.md` here is a **byte-faithful snapshot** of the subject this cartridge optimizes:
+`SKILL.md` here began as a byte-faithful snapshot of the subject and is now the **optimizer-improved
+version** — the progressive driver (`engine/loop.py`) closed two eval deficiencies against the
+authoritative source and those grounded fixes were **promoted** here (loop-log D24/D25):
 
-- **Source:** `~/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md` (the author's own work — a PM
-  coaching persona, not the copyrighted book).
-- **Snapshot date:** 2026-07-20 (loop-log D21). Re-vendor if the live skill changes; this copy is what
-  the committed golden outputs were captured against.
+- **Source (original):** `~/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md` (the author's own
+  work — a PM coaching persona, not the copyrighted book).
+- **Improvements promoted from the loop:** (1) *Handling missing or insufficient input* — a refusal
+  instruction grounded in the book's own *"define errors out of existence"*; (2) *Memory hook — DEEP* —
+  a recall mnemonic whose four letters are each verified verbatim in the book. Both are book-grounded,
+  not invented.
+- **Diverged from PM-OS:** this copy is now ahead of the PM-OS original. **Flow it back** (re-vendor to
+  PM-OS) so the live skill and this improved subject reconverge.
+- **Snapshot date:** 2026-07-20 (loop-log D21, improved D24/D25). The committed golden outputs were
+  captured against the pre-improvement skill; the added sections are additive and do not change how it
+  critiques the existing golden docs.
 - **Copyright vet:** scanned for verbatim book passages — none. The only long quoted span is a
   synthetic "feature flag service" example the skill authored itself. Short named concepts (red-flag
   vocabulary) are ideas, not expression. Safe to commit.
