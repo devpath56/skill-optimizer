@@ -24,6 +24,7 @@ cartridges/
 ```
 python3 engine/preflight.py cartridges/<name>  # → readiness: what runs clean vs what needs the book (run FIRST)
 python3 engine/score.py cartridges/<name>      # → scorecard + SHIP/RED/INCOMPLETE (deterministic axes)
+python3 engine/craft.py cartridges/<name> --json  # → craft scorecard: does SKILL.md codify the craft? (for agents)
 ```
 A fresh clone runs clean or fails loud: missing committed files → INCOMPLETE (exit 6);
 the book (external licensed dep) absent → full-book F3 NOT-RUN (loud), never a bare PASS.
@@ -61,6 +62,13 @@ the book (external licensed dep) absent → full-book F3 NOT-RUN (loud), never a
 | F1/F3 fidelity | concept coverage; no invented principle; anecdotes correct | judge vs authoritative source text |
 | F2 vocab | all named concepts present in skill | deterministic (grep) |
 | F4 hop-attribution | defect tagged source→proxy vs proxy→skill | manual, needs source text |
+| S1–S6 craft | the SKILL FILE **codifies** the craft it applies: vocab, output contract, diagnostic framework, source grounding (HARD); refusal-by-instruction, worked example (advisory) | deterministic static check on `skill_file` (`engine/craft.py`), machine-readable `--json` |
+
+**Craft (S) axis — the third leg.** Efficacy grades outputs, fidelity grades content-vs-source; craft
+grades the **skill file itself**. It answers "does this skill, as written, encode what it must apply?"
+with deterministic pass/fail so an agent never has to read the skill and fuzzily judge. HARD checks
+block the gate; advisory checks surface as NOTEs. Add a `craft` block to `manifest.json`
+(`framework_terms`, `source_markers`, `refusal_markers`, `example_markers`) to tune it per skill.
 
 ## Ship gate
 ```

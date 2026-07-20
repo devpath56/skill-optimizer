@@ -14,14 +14,14 @@ Why the negative control matters: a gate that only ever says SHIP is vacuous (CF
 --selftest degrades the flaw-laden output (recall drops below bar) and REQUIRES the gate to
 flip to BLOCK; if it still ships, the gate is broken, not the skill.
 """
-import os, sys, subprocess, shutil, tempfile
+import os, sys, subprocess, shutil, tempfile, json
 
 ENG = os.path.dirname(os.path.abspath(__file__))
 PY = sys.executable
 SHIP, BLOCK, INCOMPLETE = 0, 1, 6
 
-def run(script, cart):
-    r = subprocess.run([PY, os.path.join(ENG, script), cart], capture_output=True, text=True)
+def run(script, cart, *extra):
+    r = subprocess.run([PY, os.path.join(ENG, script), cart, *extra], capture_output=True, text=True)
     return r.returncode, r.stdout + r.stderr
 
 def gate(cart):
@@ -40,6 +40,22 @@ def gate(cart):
             reasons.append("committed fidelity FAIL:" + line.strip())
     if any("full book" in l and "NOT-RUN" in l for l in sc.splitlines()):
         reasons.append("NOTE: full-book F3 NOT-RUN (book absent) — shipping on committed checks only")
+    # craft axis (S): is the architect's craft codified in the skill file itself?
+    cr_rc, cr_out = run("craft.py", cart, "--json")
+    if cr_rc == INCOMPLETE:
+        return "BLOCK", INCOMPLETE, ["craft: vendored skill_file missing (repo integrity)"]
+    try:
+        craft = json.loads(cr_out)
+    except Exception:
+        craft = None
+    if craft and craft.get("status") == "ok":
+        if craft.get("hard_fail"):
+            reasons.append("craft GAP (skill file does not codify what it applies): HARD "
+                           + ",".join(craft["hard_fail"]))
+        for cid in craft.get("advisory_fail", []):
+            reasons.append(f"NOTE: craft advisory {cid} not codified in the skill")
+    elif craft and craft.get("status") == "external":
+        reasons.append("NOTE: craft axis NOT-RUN (skill_file external, not vendored)")
     hard = [r for r in reasons if not r.startswith("NOTE:")]
     return ("BLOCK", BLOCK, reasons) if hard else ("SHIP", SHIP, reasons)
 
