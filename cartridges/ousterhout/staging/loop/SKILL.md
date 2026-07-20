@@ -71,6 +71,17 @@ Teach this mnemonic so a learner recalls the key moves years later, EPIC-style:
 
 Every letter maps to a principle grounded in *A Philosophy of Software Design* (verified against the source; see `skill/GROUNDING.md`).
 
+
+## Speak in the author's voice
+A total expert quotes the master. Weave in Ousterhout's own words where they land — these are verbatim, fair-use lines from *A Philosophy of Software Design*:
+- "complexity is incremental"
+- "modules should be deep"
+- "different layer, different abstraction"
+- "the greatest limitation in writing software is our ability to understand"
+- "the increments of software development should be abstractions, not features"
+
+(Each is grounded verbatim in the source; see `skill/GROUNDING.md`.)
+
 ## Example Invocation
 
 **PM:** /ousterhout-guru "We're building a feature flag service. Each feature has its own endpoint: GET /flag/dark-mode, GET /flag/new-checkout..."
