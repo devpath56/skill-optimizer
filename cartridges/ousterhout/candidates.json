@@ -1,0 +1,30 @@
+{
+  "lever": "tune-skill-sub-sections",
+  "note": "Box 4-5 (generate -> re-rank). Each candidate is a captured skill output produced under ONE lever: tuning the skill's output sub-sections. restructure-output-contract was DROPPED and is NOT a lever here.",
+  "checker_model": "claude-sonnet-5",
+  "checker_note": "The full-bar (fidelity) judge model. The deterministic proxy in rerank.py is CODE (no model). Recorded per candidate for the model-separation gate: generator != checker, and neither may be claude-fable-5.",
+  "top_k": 2,
+  "candidates": [
+    {
+      "candidate_id": "C1-good",
+      "generator_model": "claude-opus-4-8",
+      "checker_model": "claude-sonnet-5",
+      "variant": "baseline sub-sections (Diagnosis / Red Flags / Tactical-vs-Strategic / Design-it-Twice / PM Actions), no severity tags",
+      "outputs": { "design-doc-01.md": "guru-output-01.md" }
+    },
+    {
+      "candidate_id": "C2-degraded",
+      "generator_model": "claude-opus-4-8",
+      "checker_model": "claude-sonnet-5",
+      "variant": "collapsed Red Flags sub-section: reports only the single most-severe flag (information leakage), drops the rest",
+      "outputs": { "design-doc-01.md": "_probe_variantB-01.md" }
+    },
+    {
+      "candidate_id": "C3-severity",
+      "generator_model": "claude-opus-4-8",
+      "checker_model": "claude-sonnet-5",
+      "variant": "sub-section lever: adds a one-line Severity (HIGH/MED/LOW) tag under each red flag for PM triage; same recall coverage as C1",
+      "outputs": { "design-doc-01.md": "_cand_C3-01.md" }
+    }
+  ]
+}

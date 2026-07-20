@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-07-19T20:39:05",
+  "cartridge": "ousterhout-guru",
+  "lever": "tune-skill-sub-sections",
+  "top_k": 2,
+  "stage1_proxy": {
+    "weights": {
+      "recall": 70,
+      "structure": 20,
+      "vocab": 10
+    },
+    "fidelity_blind": true,
+    "model": null,
+    "kind": "deterministic-code"
+  },
+  "stage2_full_bar": {
+    "status": "PENDING-HOOK",
+    "needs": [
+      "checker_model",
+      "authoritative_source"
+    ],
+    "decides": "fidelity + final weighted 0-100 winner"
+  },
+  "survivors": [
+    {
+      "candidate_id": "C1-good",
+      "generator_model": "claude-opus-4-8",
+      "checker_model": "claude-sonnet-5",
+      "proxy_score": 100.0,
+      "per_doc": [
+        {
+          "doc": "design-doc-01.md",
+          "score": 100.0,
+          "parts": {
+            "sections": "5/5",
+            "vocab_raised": 5,
+            "recall": "3/3=1.00"
+          }
+        }
+      ]
+    },
+    {
+      "candidate_id": "C3-severity",
+      "generator_model": "claude-opus-4-8",
+      "checker_model": "claude-sonnet-5",
+      "proxy_score": 100.0,
+      "per_doc": [
+        {
+          "doc": "design-doc-01.md",
+          "score": 100.0,
+          "parts": {
+            "sections": "5/5",
+            "vocab_raised": 5,
+            "recall": "3/3=1.00"
+          }
+        }
+      ]
+    }
+  ],
+  "provisional_winner": "C1-good",
+  "tie_note": "proxy TIE at 100.0 among ['C1-good', 'C3-severity']; provisional winner = C1-good (stable order). Full-bar (STAGE 2) breaks the tie."
+}

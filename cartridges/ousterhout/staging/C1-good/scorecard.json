@@ -1,0 +1,30 @@
+{
+  "candidate_id": "C1-good",
+  "staged_at": "2026-07-19T20:39:05",
+  "cartridge": "ousterhout-guru",
+  "lever": "tune-skill-sub-sections",
+  "variant": "baseline sub-sections (Diagnosis / Red Flags / Tactical-vs-Strategic / Design-it-Twice / PM Actions), no severity tags",
+  "generator_model": "claude-opus-4-8",
+  "checker_model": "claude-sonnet-5",
+  "model_separation": "PASS (generator != checker, neither is Fable)",
+  "stage1_proxy_score": 100.0,
+  "stage1_kind": "deterministic-code (efficacy-only, fidelity-blind)",
+  "stage1_parts": [
+    {
+      "doc": "design-doc-01.md",
+      "score": 100.0,
+      "parts": {
+        "sections": "5/5",
+        "vocab_raised": 5,
+        "recall": "3/3=1.00"
+      }
+    }
+  ],
+  "staged_outputs": {
+    "design-doc-01.md": "guru-output-01.md"
+  },
+  "tie_note": "proxy TIE at 100.0 among ['C1-good', 'C3-severity']; provisional winner = C1-good (stable order). Full-bar (STAGE 2) breaks the tie.",
+  "stage2_full_bar": "PENDING-HOOK \u2014 fidelity (concept coverage / invented principles / anecdote correctness) NOT yet checked; needs the checker model. Full-bar may re-order tied survivors.",
+  "promotion": "STAGED ONLY \u2014 the live skill_file is untouched; a human/next step applies.",
+  "live_skill_file": "/Users/devanshpathak/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md"
+}

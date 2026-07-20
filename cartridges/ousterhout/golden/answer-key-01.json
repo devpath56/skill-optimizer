@@ -1,0 +1,29 @@
+{
+  "doc": "design-doc-01.md",
+  "note": "Ground-truth by CONSTRUCTION. Each flaw was deliberately inserted by the author of the doc; this key is metadata about what was planted, not a model's interpretation of the doc. That is what makes it non-circular (probes A7).",
+  "planted_flaws": [
+    {
+      "id": "P1",
+      "component": "MetricsFacade",
+      "flaw_vocab": "shallow module",
+      "why_planted": "Fat interface (one trivial method per event type) over near-zero implementation; every method is a one-line delegation to counter.add. Collapses to a single increment(event_name) method.",
+      "match_terms": ["shallow module", "shallow", "thin"]
+    },
+    {
+      "id": "P2",
+      "component": "ReportController.generate_report",
+      "flaw_vocab": "pass-through",
+      "why_planted": "Method does nothing but call another method with the same signature and return its result; adds no value, increases interface surface.",
+      "match_terms": ["pass-through", "pass through", "passthrough"]
+    },
+    {
+      "id": "P3",
+      "component": "Profile cache key",
+      "flaw_vocab": "information leakage",
+      "why_planted": "The cache-key format is knowledge duplicated across ProfileWriter and ProfileReader with no shared helper; a schema bump forces a coordinated edit in both (change amplification). Classic information leakage.",
+      "match_terms": ["information leakage", "leak", "leakage"]
+    }
+  ],
+  "closed_vocab": ["shallow module", "information leakage", "temporal decomposition", "pass-through", "conjoined methods", "special-general mixture", "vague names", "overexposure"],
+  "expected_sections": ["Complexity Diagnosis", "Red Flags Found", "Tactical vs. Strategic", "Design it Twice", "PM Actions"]
+}

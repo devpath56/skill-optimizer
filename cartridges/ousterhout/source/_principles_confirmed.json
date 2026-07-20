@@ -1,0 +1,15 @@
+[
+ "Complexity is incremental",
+ "Continual small investments",
+ "Modules should be deep",
+ "Simple interface > simple implementation",
+ "General-purpose modules are deeper",
+ "Separate general- and special-purpose code",
+ "Different layer, different abstraction",
+ "Pull complexity downward",
+ "Define errors out of existence",
+ "Design it twice",
+ "Comments describe what's not obvious from code",
+ "Design for ease of reading, not writing",
+ "Increments = abstractions, not features"
+]

@@ -1,0 +1,83 @@
+{
+  "skill": "ousterhout-guru",
+  "skill_file": "/Users/devanshpathak/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md",
+  "authoritative_source": {
+    "book": "A Philosophy of Software Design (Ousterhout)",
+    "on_disk_proxy": "/Users/devanshpathak/Downloads/PM-OS/context-library/strategy/philosophy-of-software-design-reference.md",
+    "book_text": "/Users/devanshpathak/Downloads/A Philosophy of Software Design - John Ousterhout.pdf",
+    "verified_reference": "/Users/devanshpathak/Downloads/PM-OS/.claude/skills/ousterhout-guru/reference.verified.md"
+  },
+  "closed_vocab": [
+    "shallow module",
+    "information leakage",
+    "temporal decomposition",
+    "pass-through",
+    "conjoined methods",
+    "special-general mixture",
+    "vague names",
+    "overexposure"
+  ],
+  "expected_sections": [
+    "Complexity Diagnosis",
+    "Red Flags Found",
+    "Tactical vs. Strategic",
+    "Design it Twice",
+    "PM Action"
+  ],
+  "concept_checklist": [
+    "Complexity is incremental (accumulates from small decisions)",
+    "Working code isn't enough \u2014 strategic > tactical programming",
+    "Continual small investments in design (~10-20%)",
+    "Modules should be deep",
+    "Simple interface matters more than simple implementation",
+    "General-purpose modules are deeper",
+    "Separate general-purpose and special-purpose code",
+    "Different layer, different abstraction",
+    "Pull complexity downward",
+    "Define errors out of existence",
+    "Design it twice",
+    "Comments describe what is not obvious from the code",
+    "Design for ease of reading, not ease of writing",
+    "Increments of development are abstractions, not features"
+  ],
+  "thresholds": {
+    "recall": 0.9,
+    "clean_restraint_max": 1,
+    "concept_coverage": 0.9,
+    "vocab_completeness": 8,
+    "invented_principles_max": 0,
+    "pm_action_soundness": 0.8,
+    "judge_tpr_tnr": 0.85
+  },
+  "golden_set": [
+    {
+      "doc": "design-doc-01.md",
+      "key": "answer-key-01.json",
+      "output": "guru-output-01.md",
+      "state": "flaw-laden"
+    },
+    {
+      "doc": "clean-01.md",
+      "key": null,
+      "output": "clean-out-01.md",
+      "state": "clean"
+    },
+    {
+      "doc": "offdomain-01.md",
+      "key": null,
+      "output": "offdomain-out-01.md",
+      "state": "off-domain"
+    }
+  ],
+  "fidelity_status": {
+    "F2_vocab": "PASS 8/8",
+    "F3_grounded": "PASS (fresh auditor, all 9 defects fixed)",
+    "fixed_via": "iterate round 1"
+  },
+  "bar_provenance": {
+    "F1_checklist": "derived from and confirmed against the book's own design principles (source/book.norm.txt); 14/14 grounded",
+    "F2_vocab": "8 named red flags confirmed present in book (subset of book's full ~14)",
+    "closes": "CF-068 \u2014 bar was previously authored from the proxy before the book was in hand",
+    "rule": "fidelity criteria are derived from the primary source, never a distillation"
+  }
+}

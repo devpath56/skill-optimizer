@@ -1,0 +1,45 @@
+{
+  "stage": "2-full-bar-consumer",
+  "finalized_at": "2026-07-19T20:39:05",
+  "cartridge": "ousterhout-guru",
+  "judge_model": "claude-sonnet-5",
+  "generator_model": "claude-opus-4-8",
+  "model_separation": "PASS (judge != generator, neither is Fable)",
+  "validated": true,
+  "winner_label": "SETTLED",
+  "winner": "C1-good",
+  "judge_stated_winner": "C1-good",
+  "winner_agreement": true,
+  "disagreement_note": null,
+  "judge_margin": 0.03,
+  "judge_rationale": "C3's severity tags add real triage value (HIGH on the cache key matches the doc's own admitted risk) but the PM-action set lost a genuinely load-bearing question ('how many files change when we add the next event type') with nothing added in return, and the same-component dual-severity (HIGH + MED on MetricsFacade) risks read-as-noise; C1 wins narrowly on completeness of actionable PM guidance.",
+  "weights_used": {
+    "final_proxy_share": 0.4,
+    "final_judge_share": 0.6,
+    "judge_e5": 0.6,
+    "judge_critique": 0.4,
+    "fidelity_parity": "hard gate (parity=false -> judge portion 0, cannot win)"
+  },
+  "leaderboard": [
+    {
+      "candidate_id": "C1-good",
+      "stage1_proxy": 100.0,
+      "stage2_e5_pm_action": 0.93,
+      "stage2_critique_quality": 0.85,
+      "stage2_fidelity_parity": true,
+      "judge_composite_0_1": 0.898,
+      "final_weighted_0_100": 93.88
+    },
+    {
+      "candidate_id": "C3-severity",
+      "stage1_proxy": 100.0,
+      "stage2_e5_pm_action": 0.85,
+      "stage2_critique_quality": 0.88,
+      "stage2_fidelity_parity": true,
+      "judge_composite_0_1": 0.862,
+      "final_weighted_0_100": 91.72
+    }
+  ],
+  "validation_required": "judge TPR/TNR >= 0.85 vs human labels before this verdict is a gate, not a hint",
+  "promotion": "STAGED ONLY \u2014 final-scorecard.json records the winner; the live skill_file is NOT touched. A PROVISIONAL winner must NOT be auto-applied until the judge is calibrated at TPR/TNR >= 0.85."
+}

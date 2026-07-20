@@ -1,0 +1,37 @@
+{
+  "cartridge": "ousterhout-guru",
+  "stage": "2-full-bar",
+  "judge_model": "claude-sonnet-5",
+  "generator_model": "claude-opus-4-8",
+  "model_separation_ok": true,
+  "validated": true,
+  "validation_required": "judge TPR/TNR >= 0.85 vs human labels before this verdict is a gate, not a hint",
+  "survivors": [
+    {
+      "candidate_id": "C1-good",
+      "e5_pm_action": 0.93,
+      "critique_quality": 0.85,
+      "fidelity_parity": true,
+      "evidence": "PM Actions includes a 4th diagnostic question absent from C3: \"How many files change when we add the *next* event type? What would it take to make that a data change instead of a code change?\" \u2014 this is the sharpest lever question in either output (forces the change-amplification symptom into a concrete metric) and C3 drops it entirely."
+    },
+    {
+      "candidate_id": "C3-severity",
+      "e5_pm_action": 0.85,
+      "critique_quality": 0.88,
+      "fidelity_parity": true,
+      "evidence": "Severity tags are evidence-anchored, not decorative: \"Severity: HIGH \u2014 the failure mode is *silent*: a v3 bump that updates only one side produces no error, just cache misses that degrade performance (or correctness) months later. This is the single most severe issue in the doc.\" This correctly matches the doc's own admitted risk and gives a PM a triage order the prose-only C1 leaves implicit. Cost: MetricsFacade gets two different severities (HIGH for 'Shallow module', MED for 'Special-general mixture') on the same component with no note that they're different axes \u2014 a PM skimming tags alone could read that as inconsistent."
+    }
+  ],
+  "winner": "C1-good",
+  "margin": 0.03,
+  "rationale": "C3's severity tags add real triage value (HIGH on the cache key matches the doc's own admitted risk) but the PM-action set lost a genuinely load-bearing question ('how many files change when we add the next event type') with nothing added in return, and the same-component dual-severity (HIGH + MED on MetricsFacade) risks read-as-noise; C1 wins narrowly on completeness of actionable PM guidance.",
+  "validation": {
+    "tpr": 1.0,
+    "tnr": 1.0,
+    "n": 18,
+    "labels": "by-construction (non-circular)",
+    "judge_model": "claude-sonnet-5",
+    "threshold": 0.85,
+    "caveat": "validated as defined but n=18 + perfect agreement = small/easy set; harden with more human-labeled hard cases before over-trusting"
+  }
+}

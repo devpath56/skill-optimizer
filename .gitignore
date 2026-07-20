@@ -1,0 +1,6 @@
+# Copyrighted ground-truth: extracted book text and source PDFs stay LOCAL, never committed.
+cartridges/*/source/book*.txt
+cartridges/*/source/*.pdf
+cartridges/*/source/*.epub
+# Captured skill outputs are regenerable traces
+cartridges/*/golden/*-out-*.md
