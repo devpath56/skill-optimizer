@@ -146,6 +146,32 @@
         "netscape rewrite",
         "10,000 line function"
       ]
+    },
+    "mnemonic": {
+      "acronym": "DEEP",
+      "expansion": [
+        {
+          "letter": "D",
+          "principle": "Deep modules \u2014 a simple interface over a powerful implementation",
+          "ground_probe": "deep module"
+        },
+        {
+          "letter": "E",
+          "principle": "Errors defined out of existence \u2014 redesign so the error case can't arise",
+          "ground_probe": "out of existence"
+        },
+        {
+          "letter": "E",
+          "principle": "Ease of reading over ease of writing \u2014 code and comments serve the reader",
+          "ground_probe": "ease of reading"
+        },
+        {
+          "letter": "P",
+          "principle": "Pull complexity downward \u2014 absorb it into the module, not its users",
+          "ground_probe": "pull complexity"
+        }
+      ],
+      "note": "Memorable recall aid for a teaching agent; DEEP is the book's own central metaphor. Each letter must ground in the authoritative source (checked by S10) so the mnemonic is never fabricated."
     }
   },
   "retrieval": {

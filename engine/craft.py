@@ -141,6 +141,43 @@ def evaluate(text, man, cart="."):
             add("S8", "grounding is real (vs the authoritative resource)", "hard", True,
                 f"NOT-RUN — {why}; verified only where the book is present, never a bare pass", notrun=True)
 
+    # S9/S10 memory hook — a memorable, GROUNDED mnemonic so a teaching agent can make the key
+    # principles STICK (the EPIC-style recall aid). Adversarial: a fabricated acronym whose letters
+    # are not real book principles must FAIL; a real one the skill never teaches must FAIL too.
+    mn = craft.get("mnemonic", {})
+    if mn.get("acronym"):
+        acronym = mn["acronym"]
+        exp = mn.get("expansion", [])
+        letters = "".join(e.get("letter", "") for e in exp)
+        well_formed = letters.upper() == acronym.upper() and acronym.isalpha() and 3 <= len(acronym) <= 7
+        # S9 (book-free): well-formed AND actually TAUGHT. "Taught" requires the acronym as a standalone
+        # ALL-CAPS token (the mnemonic), never the incidental lowercase word ('deep module' must NOT
+        # count) — the substring-match false-positive this axis keeps having to guard against.
+        taught_blob = text
+        gpath = os.path.join(cart, (craft.get("grounding") or {}).get("bundle", ""))
+        if (craft.get("grounding") or {}).get("bundle") and os.path.exists(gpath):
+            taught_blob += "\n" + open(gpath, encoding="utf-8", errors="ignore").read()
+        taught = well_formed and re.search(rf"\b{re.escape(acronym)}\b", taught_blob) is not None
+        add("S9", "recall mnemonic is taught (a memorable acronym the agent can teach for recall)", "advisory",
+            taught,
+            f"'{acronym}' is taught in the skill/grounding" if taught else
+            (f"mnemonic '{acronym}' is declared but NOT taught — a teaching agent can't deliver it"
+             if well_formed else f"mnemonic '{acronym}' is malformed (letters {letters!r})"))
+        # S10 (book-gated, HARD): every letter maps to a REAL book principle — no fabricated mnemonic
+        book_rel = (craft.get("grounding") or {}).get("authoritative_resource", "")
+        book_path = os.path.join(cart, book_rel) if book_rel else ""
+        if book_rel and os.path.exists(book_path):
+            bk = open(book_path, encoding="utf-8", errors="ignore").read().lower()
+            ungrounded = [e.get("letter") for e in exp if e.get("ground_probe", "").lower() not in bk]
+            add("S10", "recall mnemonic is grounded (each letter is a real book principle, not invented)",
+                "hard", not ungrounded,
+                "every letter maps to a book-grounded principle" if not ungrounded
+                else f"UNGROUNDED letters {ungrounded} — fabricated mnemonic")
+        else:
+            add("S10", "recall mnemonic is grounded (vs the authoritative resource)", "hard", True,
+                "NOT-RUN — authoritative resource absent; the mnemonic's grounding is verified only "
+                "where the book is present, never a bare pass", notrun=True)
+
     return checks
 
 

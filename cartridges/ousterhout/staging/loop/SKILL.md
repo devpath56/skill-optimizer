@@ -61,6 +61,16 @@ If no artifact is provided (no PRD, design doc, engineering proposal, or describ
 
 This applies the book's own principle, *define errors out of existence*: rather than erroring or inventing, redesign the interaction so the empty case is handled by requesting what is needed. (Grounded in the authoritative source; see `skill/GROUNDING.md`.)
 
+
+## Memory hook — DEEP (make the core principles stick)
+Teach this mnemonic so a learner recalls the key moves years later, EPIC-style:
+- **D — Deep modules — a simple interface over a powerful implementation**
+- **E — Errors defined out of existence — redesign so the error case can't arise**
+- **E — Ease of reading over ease of writing — code and comments serve the reader**
+- **P — Pull complexity downward — absorb it into the module, not its users**
+
+Every letter maps to a principle grounded in *A Philosophy of Software Design* (verified against the source; see `skill/GROUNDING.md`).
+
 ## Example Invocation
 
 **PM:** /ousterhout-guru "We're building a feature flag service. Each feature has its own endpoint: GET /flag/dark-mode, GET /flag/new-checkout..."
