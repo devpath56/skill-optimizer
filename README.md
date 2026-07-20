@@ -4,6 +4,11 @@ Score, iterate, and ship-gate a **skill file** against an **authoritative source
 blog, or expert text). Generic **engine** + per-skill **cartridge**. Shipping a new skill =
 writing a new cartridge; the engine never changes.
 
+> **What this honestly is:** a small-N **selector** + a rigorous eval/**ship-gate** — it ranks a
+> handful of candidates you hand it and gates shipping. It is **not** a DSPy-class *optimizer*
+> (it does not search a candidate space). The keeper is the rigor layer (metric, calibration,
+> gate); for real search, see [`MIGRATION.md`](./MIGRATION.md).
+
 > Principle: **if it can't be run and measured, it isn't done.** Acceptance is a behavioral
 > number, not a resemblance. The agent contract is [`HANDOFF.md`](./HANDOFF.md).
 
@@ -85,10 +90,14 @@ load-bearing property), invoke the skill on each, run the scorer, fix RED checks
 - **Two hops, not one.** Checking skill-vs-distillation misses errors the distillation inherited
   from the source. Ground against the real source.
 
-## Status
-Tenant #1 `ousterhout-guru`: efficacy SHIP-eligible on a 3-doc probe slice; fidelity F2 8/8, F3
-PASS after one iterate round (fixed 6 fabricated quotes in the distillation). Not yet at full gate
-— judge axes (E5/E3-validity) pending, golden set not scaled to 15. See `RUN-01.md`.
+## Status (honest, provisional)
+Tenant #1 `ousterhout-guru`:
+- **efficacy**: SHIP-eligible on a **3-doc probe slice (recall n=1 flaw-laden — NOT statistically
+  robust)**. Not a full verdict; scale the golden set to ~15 for real recall/precision.
+- **fidelity**: F2 8/8, F3 PASS after one iterate round (fixed 6 fabricated quotes).
+- **E5 judge**: VALIDATED but **PROVISIONAL (n=18 by-construction, one-shot, no train/test split)** —
+  read "smoke-tested", not "production-calibrated".
+Treat every number here as provisional until the sets are scaled + human-labeled. See `RUN-01.md`.
 
 ## Pre-ship gate (the main entry point)
 `gate.py` answers the real question — **would this skill ship to the team?** — and drops into CI / a pre-commit hook.

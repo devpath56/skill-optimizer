@@ -157,6 +157,8 @@ def main():
     validated = tpr_ok and tnr_ok
     if validated:
         print(f"VERDICT: VALIDATED  (TPR & TNR both >= {THRESHOLD:.2f})")
+        print("  PROVISIONAL, though: a small by-construction set. Widen to ~100 human-labeled")
+        print("  real cases + a train/test split before trusting this judge at scale.")
         print("  -> The E5 judge verdict is now a GATE, not a hint. STAGE 2 winners")
         print("     resting on it may drop the PROVISIONAL label.")
         rc = 0
