@@ -3,8 +3,8 @@
   "rounds": [
     {
       "round": 0,
-      "picked": "S11",
-      "query": "simpler than their implementations",
+      "picked": "S14",
+      "query": "exception masking",
       "retrieval": {
         "found": true,
         "source": "source/book.norm.txt",

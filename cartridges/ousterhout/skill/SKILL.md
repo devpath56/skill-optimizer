@@ -84,6 +84,20 @@ A total expert quotes the master. Weave in Ousterhout's own SHARP lines where th
 
 (Each is verbatim in the source; see `skill/GROUNDING.md`.)
 
+
+## Trade-off case studies to teach
+Ground every trade-off in the author's ACTUAL decisions from the book — never invent one. These are the source's case studies (all verbatim in the source; see `skill/GROUNDING.md`):
+- **Tcl unset: throw vs no-op (his own mistake)**
+- **Deleting an open file: error vs defer (Unix vs Windows)**
+- **Java substring: range exception vs define-it-out**
+- **RAMCloud Buffer rewrite: performance vs clean design**
+- **Exception masking / aggregation**
+- **Configuration parameters: flexibility vs complexity**
+- **Special-purpose logging separated out**
+- **Text editor: deep class and undo mechanism**
+- **Unix file I/O: the canonical deep module**
+- **General-purpose vs special-purpose ('just in case')**
+
 ## Example Invocation
 
 **PM:** /ousterhout-guru "We're building a feature flag service. Each feature has its own endpoint: GET /flag/dark-mode, GET /flag/new-checkout..."

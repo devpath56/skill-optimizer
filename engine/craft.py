@@ -232,6 +232,37 @@ def evaluate(text, man, cart="."):
                 "NOT-RUN — authoritative resource absent; signature quotes verified verbatim only where "
                 "the book is present, never a bare pass", notrun=True)
 
+    # S14/S15 trade-off decision recall — can a teaching agent reference the source's actual trade-off
+    # case studies (Tcl unset, deleting an open file, substring, the RAMCloud rewrite...)? High recall,
+    # or the agent omits them or invents its own. The E2-recall idea applied to the source's anecdotes.
+    td = craft.get("tradeoff_decisions", [])
+    if td:
+        thr = craft.get("tradeoff_recall_threshold", 0.9)
+        bundle = text.lower()
+        gpath = os.path.join(cart, (craft.get("grounding") or {}).get("bundle", ""))
+        if (craft.get("grounding") or {}).get("bundle") and os.path.exists(gpath):
+            bundle += "\n" + open(gpath, encoding="utf-8", errors="ignore").read().lower()
+        covered = [d for d in td if d.get("grounding_probe", "").lower() in bundle]
+        recall = len(covered) / len(td)
+        missing = [d["name"] for d in td if d not in covered]
+        add("S14", f"trade-off decision recall (>= {thr:.0%} of the source's case studies are teachable)",
+            "advisory", recall >= thr,
+            f"recall {len(covered)}/{len(td)} = {recall:.2f} (>= {thr:.2f})" if recall >= thr
+            else f"recall {len(covered)}/{len(td)} = {recall:.2f} < {thr:.2f} — MISSING (agent would "
+                 f"omit/invent): {missing}")
+        book_rel = (craft.get("grounding") or {}).get("authoritative_resource", "")
+        book_path = os.path.join(cart, book_rel) if book_rel else ""
+        if book_rel and os.path.exists(book_path):
+            bk = open(book_path, encoding="utf-8", errors="ignore").read().lower()
+            unreal = [d["name"] for d in td if d.get("book_probe", "").lower() not in bk]
+            add("S15", "trade-off decision key is real (each case study is verbatim in the source)", "hard",
+                not unreal, "every declared trade-off decision is verbatim in the book" if not unreal
+                else f"NOT in the source (invented/padded answer key): {unreal}")
+        else:
+            add("S15", "trade-off decision key is real (vs the authoritative resource)", "hard", True,
+                "NOT-RUN — authoritative resource absent; the decision key is verified against the book "
+                "only where present, never a bare pass", notrun=True)
+
     return checks
 
 

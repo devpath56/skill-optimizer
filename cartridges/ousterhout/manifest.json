@@ -207,7 +207,61 @@
         "different layer, different abstraction"
       ],
       "note": "SHARP, interview-grade signature quotes only. A quote counts (S11) iff it is NOT a generic platitude (generic_blocklist) AND carries a tradeoff structure (regex in craft.py) OR a counterintuitive coined mechanism. S13 forbids declaring any platitude as a signature quote; S12 requires each verbatim in the book. All (c) Ousterhout, fair use (<15w), attributed."
-    }
+    },
+    "tradeoff_recall_threshold": 0.9,
+    "tradeoff_decisions": [
+      {
+        "name": "Tcl unset: throw vs no-op (his own mistake)",
+        "book_probe": "unset",
+        "grounding_probe": "unset"
+      },
+      {
+        "name": "Deleting an open file: error vs defer (Unix vs Windows)",
+        "book_probe": "file deletion",
+        "grounding_probe": "open file"
+      },
+      {
+        "name": "Java substring: range exception vs define-it-out",
+        "book_probe": "substring",
+        "grounding_probe": "substring"
+      },
+      {
+        "name": "RAMCloud Buffer rewrite: performance vs clean design",
+        "book_probe": "ramcloud",
+        "grounding_probe": "ramcloud"
+      },
+      {
+        "name": "Exception masking / aggregation",
+        "book_probe": "exception masking",
+        "grounding_probe": "exception masking"
+      },
+      {
+        "name": "Configuration parameters: flexibility vs complexity",
+        "book_probe": "configuration parameter",
+        "grounding_probe": "configuration"
+      },
+      {
+        "name": "Special-purpose logging separated out",
+        "book_probe": "separate class for logging",
+        "grounding_probe": "logging"
+      },
+      {
+        "name": "Text editor: deep class and undo mechanism",
+        "book_probe": "editor",
+        "grounding_probe": "editor"
+      },
+      {
+        "name": "Unix file I/O: the canonical deep module",
+        "book_probe": "file i/o",
+        "grounding_probe": "file i/o"
+      },
+      {
+        "name": "General-purpose vs special-purpose ('just in case')",
+        "book_probe": "general-purpose",
+        "grounding_probe": "general-purpose"
+      }
+    ],
+    "tradeoff_note": "Recall over the source's trade-off case studies. S14 = the bundle carries >= threshold of them (teachable, not omitted/invented); S15 = each is verbatim in the book (the answer key is real, not padded). book_probe verifies against the source; grounding_probe detects coverage in the skill+grounding bundle."
   },
   "retrieval": {
     "source_first": "source/book.norm.txt",
