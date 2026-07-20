@@ -26,6 +26,9 @@ jobs:
       - name: gate negative control (must BLOCK a degraded skill)
         run: python3 engine/gate.py --selftest cartridges/ousterhout
 
+      - name: gate self-durability (--selftest must catch a neutered gate)
+        run: python3 engine/gate_durability.py cartridges/ousterhout
+
       - name: truthfulness gate (RG + T1 + T2 + T4, fail-closed)
         run: python3 cartridges/ousterhout/truthfulness/gate.py cartridges/ousterhout/truthfulness
 
