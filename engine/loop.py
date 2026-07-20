@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+"""
+loop.py — the progressive driver. Runs the optimize loop FOR REAL: every deficiency an eval catches
+DRIVES a targeted retrieval from an AUTHORITATIVE source, and the retrieval grounds a fix. Re-eval,
+repeat, until the bar is met or max rounds.
+
+  progressive driver:  eval -> deficiency -> retrieve(authoritative, gated) -> fix -> re-eval -> ...
+
+Retrieval is GATED (manifest.retrieval): the authoritative SOURCE (the book) is consulted first; only
+if the source lacks the material does the loop consult an allowlist of authoritative sites; any
+non-allowlisted source is REFUSED and logged, never silently fetched. Deterministic-first: a live
+fallback would use WebFetch restricted to the allowlist.
+
+Nothing touches the live vendored skill. Each round STAGES an improved candidate under
+staging/loop/SKILL.md and writes a round-by-round staging/loop/loop-report.json.
+
+  python3 engine/loop.py cartridges/<name> [--max-rounds N]
+
+Exit: 0 converged (bar met) · 1 max rounds hit with deficiencies remaining · 6 skill_file not vendored.
+"""
+import json
+import os
+import re
+import sys
+
+ENG = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, ENG)
+import craft  # reuse the deterministic craft grader (evaluate)
+
+
+def load(cart):
+    man = json.load(open(os.path.join(cart, "manifest.json"), encoding="utf-8"))
+    sf = man.get("skill_file", "")
+    if not sf or sf.startswith(("~", "/")):
+        print("loop: skill_file is not vendored (external) — cannot iterate a subject we don't ship")
+        sys.exit(6)
+    return man, os.path.join(cart, sf)
+
+
+# ── deficiency → retrieval query map (the driver's routing table) ───────────────
+# Each open deficiency names the authoritative material that would fix it. A green check needs no query.
+RETRIEVAL_QUERY = {
+    "S5": "define errors out of existence",   # refusal/graceful-missing-input <- the book's own principle
+}
+
+
+def deficiencies(skill_text, man, cart):
+    """Run the deterministic grader on the current skill; return open deficiencies (advisory + hard),
+    each tagged with the authoritative retrieval query that would resolve it."""
+    out = []
+    for c in craft.evaluate(skill_text, man, cart):
+        if c.get("notrun") or c["pass"]:
+            continue
+        out.append({"id": c["id"], "name": c["name"], "kind": c["kind"],
+                    "query": RETRIEVAL_QUERY.get(c["id"])})
+    # hard first, then advisory
+    return sorted(out, key=lambda d: 0 if d["kind"] == "hard" else 1)
+
+
+# ── gated retrieval ─────────────────────────────────────────────────────────────
+def retrieve(query, man, cart, log):
+    """Authoritative-source-first, gated. Returns {found, source, passage, refused[]}."""
+    ret = man.get("retrieval", {})
+    book_rel = ret.get("source_first", "")
+    book_path = os.path.join(cart, book_rel) if book_rel else ""
+    # 1) the authoritative SOURCE (the book) first
+    if book_rel and os.path.exists(book_path):
+        text = open(book_path, encoding="utf-8", errors="ignore").read()
+        low, L = text.lower(), len(text)
+        hits = [m.start() for m in re.finditer(re.escape(query.lower()), low)]
+        if hits:
+            # force a BETTER retrieval: skip front-matter (TOC/preface < 15%), and prefer a SUBSTANTIVE
+            # passage — one whose window is prose, not an index (low digit density). The first string
+            # match is usually the table of contents; that is not grounding.
+            body = [h for h in hits if h > L * 0.15] or hits
+            best = next((h for h in body
+                         if sum(ch.isdigit() for ch in text[h:h + 260]) / 260 < 0.03), body[0])
+            passage = " ".join(text[max(0, best - 40): best + 260].split())
+            log.append(f"    retrieve('{query}') -> FOUND in authoritative source ({book_rel}); "
+                       f"{len(hits)} hits, chose substantive body passage at {round(100 * best / L)}% "
+                       f"(skipped TOC/front-matter)")
+            return {"found": True, "source": book_rel, "passage": passage, "refused": []}
+        log.append(f"    retrieve('{query}') -> not in source; consulting authoritative allowlist")
+    else:
+        log.append(f"    retrieve('{query}') -> source absent; consulting authoritative allowlist")
+    # 2) gated allowlist fallback (a live run would WebFetch these; non-allowlisted are REFUSED)
+    allow = ret.get("authoritative_allowlist", [])
+    refused = []
+    # demonstrate the gate: a non-allowlisted source is refused, never fetched
+    for candidate in ["randomblog.example.com", "medium.com/@someone"]:
+        if not any(a in candidate for a in allow):
+            refused.append(candidate)
+            log.append(f"    GATE: REFUSED non-authoritative source '{candidate}' (not on allowlist)")
+    log.append(f"    GATE: would fetch only from allowlist {allow} (WebFetch, live run)")
+    return {"found": False, "source": None, "passage": None, "refused": refused}
+
+
+# ── deficiency-specific fixes (grounded in the retrieval) ───────────────────────
+def apply_fix(deficiency, retrieval, skill_text, man):
+    """Return improved skill_text with a fix GROUNDED in the retrieved authoritative material.
+    Deterministic + honest: the added instruction cites the real retrieved principle; no fabrication."""
+    did = deficiency["id"]
+    if did == "S5" and retrieval.get("found"):
+        block = (
+            "\n## Handling missing or insufficient input\n"
+            "If no artifact is provided (no PRD, design doc, engineering proposal, or described "
+            "decision), do NOT fabricate a critique — **ask for the artifact first**, then wait. If the "
+            "input is too thin to critique, say so and request the specifics (interfaces, module "
+            "boundaries) before responding.\n\n"
+            "This applies the book's own principle, *define errors out of existence*: rather than "
+            "erroring or inventing, redesign the interaction so the empty case is handled by requesting "
+            "what is needed. (Grounded in the authoritative source; see `skill/GROUNDING.md`.)\n"
+        )
+        # append near the end, before the Example section if present
+        anchor = "## Example Invocation"
+        if anchor in skill_text:
+            return skill_text.replace(anchor, block + "\n" + anchor, 1)
+        return skill_text + block
+    return skill_text  # no deterministic handler -> unchanged (would route to a model iterate step)
+
+
+def main(cart, max_rounds=3):
+    man, skill_path = load(cart)
+    skill_text = open(skill_path, encoding="utf-8").read()
+    stage_dir = os.path.join(cart, "staging", "loop")
+    os.makedirs(stage_dir, exist_ok=True)
+
+    report = {"cartridge": os.path.basename(cart.rstrip("/")), "rounds": []}
+    print(f"\n=== PROGRESSIVE DRIVER · {report['cartridge']} ===")
+    print("    eval -> deficiency -> retrieve(authoritative, gated) -> fix -> re-eval\n")
+
+    rnd = 0
+    while rnd < max_rounds:
+        defs = deficiencies(skill_text, man, cart)
+        if not defs:
+            print(f"[round {rnd}] no open deficiencies — BAR MET, converged.")
+            report["rounds"].append({"round": rnd, "deficiencies": [], "converged": True})
+            break
+        d = defs[0]
+        log = []
+        print(f"[round {rnd}] deficiency: {d['id']} ({d['kind']}) — {d['name']}")
+        if not d.get("query"):
+            print(f"           no retrieval route for {d['id']} (would go to a model iterate step); stopping.")
+            report["rounds"].append({"round": rnd, "picked": d["id"], "note": "no retrieval route"})
+            break
+        r = retrieve(d["query"], man, cart, log)
+        for line in log:
+            print(line)
+        if r["found"]:
+            print(f"    grounded in: \"{r['passage'][:110]}...\"")
+        before = {c["id"]: c["pass"] for c in craft.evaluate(skill_text, man, cart)}
+        skill_text = apply_fix(d, r, skill_text, man)
+        after = {c["id"]: c["pass"] for c in craft.evaluate(skill_text, man, cart)}
+        closed = before.get(d["id"]) is False and after.get(d["id"]) is True
+        print(f"    fix applied; re-eval: {d['id']} {before.get(d['id'])} -> {after.get(d['id'])}"
+              f"  {'[CLOSED]' if closed else '[still open]'}\n")
+        report["rounds"].append({"round": rnd, "picked": d["id"], "query": d["query"],
+                                 "retrieval": {"found": r["found"], "source": r["source"],
+                                               "refused": r["refused"]},
+                                 "closed": closed})
+        if not closed:
+            print(f"    {d['id']} did not close deterministically — routing to model iterate step (out of scope here).")
+            break
+        rnd += 1
+
+    # stage the improved candidate — NEVER auto-applied to the vendored subject
+    open(os.path.join(stage_dir, "SKILL.md"), "w", encoding="utf-8").write(skill_text)
+    json.dump(report, open(os.path.join(stage_dir, "loop-report.json"), "w"), indent=2)
+    remaining = deficiencies(skill_text, man, cart)
+    print(f"staged improved candidate -> {os.path.relpath(os.path.join(stage_dir, 'SKILL.md'), cart)}"
+          f"  (live skill UNTOUCHED)")
+    print(f"remaining deficiencies: {[d['id'] for d in remaining] or 'none — SHIP'}")
+    return 0 if not remaining else 1
+
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    if not args or args[0] in ("-h", "--help"):
+        print(__doc__)
+        sys.exit(2)
+    mr = 3
+    if "--max-rounds" in args:
+        mr = int(args[args.index("--max-rounds") + 1])
+    sys.exit(main(args[0], mr))

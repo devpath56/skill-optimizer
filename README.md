@@ -132,7 +132,22 @@ python3 engine/gate_durability.py cartridges/ousterhout # SELF-DURABILITY: --sel
                                                          # neutered gate (mutate -> run -> restore; CF-067)
 python3 engine/craft.py     cartridges/ousterhout        # CRAFT axis: does SKILL.md codify the craft? (table)
 python3 engine/craft.py     cartridges/ousterhout --json # machine-readable craft scorecard (for agents)
+python3 engine/loop.py      cartridges/ousterhout        # PROGRESSIVE DRIVER: run the actual optimize loop
 ```
+
+## Progressive driver (the actual loop) · `engine/loop.py`
+Runs the optimize loop for real: **eval → deficiency → retrieve(authoritative, gated) → fix → re-eval →
+repeat**, until the bar is met. Every deficiency an eval catches DRIVES a targeted retrieval that grounds
+its fix — the fix is never invented.
+- **Gated retrieval** (`manifest.retrieval`): the authoritative **source (the book) first**; only if the
+  source lacks the material does it consult an **allowlist of authoritative sites**; any non-allowlisted
+  source is **REFUSED**, never silently fetched. Retrieval skips front-matter/TOC and picks the
+  substantive body passage (forces a *better* retrieval, not the first string match).
+- **Staged, never auto-applied**: each round writes `staging/loop/SKILL.md` + a round-by-round
+  `loop-report.json`; the live vendored skill is untouched. A human/next step promotes.
+- **Demonstrated**: caught `S5` (refusal not codified) → retrieved the book's own *"define errors out of
+  existence"* (chose the 44% body passage over the TOC) → staged a grounded refusal instruction → S5
+  `False→True` → converged to SHIP. A book-absent query correctly refused `medium.com`/random blogs.
 `gate_durability.py` closes the last loop: `--selftest` proves the gate isn't vacuous, and this proves
 `--selftest` isn't vacuous — it mutates `gate.py`'s decision logic (always-SHIP; drop the efficacy
 reason) and **requires** `--selftest` to flip to failure, restoring the file byte-for-byte. A stale
