@@ -42,6 +42,7 @@ def load(cart):
 RETRIEVAL_QUERY = {
     "S5": "define errors out of existence",   # refusal/graceful-missing-input <- the book's own principle
     "S9": "deep module",                       # the recall mnemonic's anchor principle (DEEP)
+    "S11": "modules should be deep",           # authorial voice — anchor signature quote
 }
 
 
@@ -126,6 +127,21 @@ def apply_fix(deficiency, retrieval, skill_text, man):
             f"Teach this mnemonic so a learner recalls the key moves years later, EPIC-style:\n{rows}\n\n"
             f"Every letter maps to a principle grounded in *A Philosophy of Software Design* "
             f"(verified against the source; see `skill/GROUNDING.md`).\n")
+        anchor = "## Example Invocation"
+        if anchor in skill_text:
+            return skill_text.replace(anchor, block + "\n" + anchor, 1)
+        return skill_text + block
+    if did == "S11":
+        voice = man.get("craft", {}).get("voice", {})
+        quotes = voice.get("signature_quotes", [])
+        # weave in signature quotes not already surfaced by the persona (each verbatim + fair-use)
+        pick = [q for q in quotes if q.lower() not in skill_text.lower()][:5]
+        rows = "\n".join(f'- "{q}"' for q in pick)
+        block = (
+            "\n## Speak in the author's voice\n"
+            "A total expert quotes the master. Weave in Ousterhout's own words where they land — "
+            "these are verbatim, fair-use lines from *A Philosophy of Software Design*:\n"
+            f"{rows}\n\n(Each is grounded verbatim in the source; see `skill/GROUNDING.md`.)\n")
         anchor = "## Example Invocation"
         if anchor in skill_text:
             return skill_text.replace(anchor, block + "\n" + anchor, 1)

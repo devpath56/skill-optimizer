@@ -172,6 +172,20 @@
         }
       ],
       "note": "Memorable recall aid for a teaching agent; DEEP is the book's own central metaphor. Each letter must ground in the authoritative source (checked by S10) so the mnemonic is never fabricated."
+    },
+    "voice": {
+      "min_quotes": 3,
+      "signature_quotes": [
+        "complexity is incremental",
+        "modules should be deep",
+        "different layer, different abstraction",
+        "pull complexity downward",
+        "design it twice",
+        "the greatest limitation in writing software is our ability to understand",
+        "the increments of software development should be abstractions, not features",
+        "the most important technique for achieving deep modules is information hiding"
+      ],
+      "note": "The author's signature/quotable lines. (c) John Ousterhout, 'A Philosophy of Software Design', quoted under fair use (each < 15 words, attributed). S12 verifies each is verbatim in the book so the skill's 'voice' is never fabricated; S11 checks the bundle carries >= min_quotes so a teaching agent can speak in the expert's voice."
     }
   },
   "retrieval": {

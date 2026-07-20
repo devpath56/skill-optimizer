@@ -178,6 +178,36 @@ def evaluate(text, man, cart="."):
                 "NOT-RUN — authoritative resource absent; the mnemonic's grounding is verified only "
                 "where the book is present, never a bare pass", notrun=True)
 
+    # S11/S12 authorial voice — can a teaching agent speak in the EXPERT'S voice? Does the bundle carry
+    # the author's signature/quotable lines? Adversarial: a "quote" not verbatim in the source is a
+    # fabricated/misattributed voice and must FAIL (the failure that started this whole project).
+    voice = craft.get("voice", {})
+    quotes = voice.get("signature_quotes", [])
+    if quotes:
+        min_q = voice.get("min_quotes", 3)
+        # skill-FILE level (the ask): the skill's OWN persona must surface the author's signature lines,
+        # not merely have them reachable in the grounding bundle.
+        blob = text.lower()
+        carried = [q for q in quotes if q.lower() in blob]
+        add("S11", f"authorial voice is taught (the skill surfaces >= {min_q} signature quotes)", "advisory",
+            len(carried) >= min_q,
+            f"{len(carried)}/{len(quotes)} signature quotes in the skill (>= {min_q} needed)" if len(carried) >= min_q
+            else f"only {len(carried)}/{len(quotes)} signature quotes in the skill — the persona can't speak "
+                 f"in the author's voice (needs >= {min_q}; the rest sit in the grounding, not the persona)")
+        book_rel = (craft.get("grounding") or {}).get("authoritative_resource", "")
+        book_path = os.path.join(cart, book_rel) if book_rel else ""
+        if book_rel and os.path.exists(book_path):
+            bk = open(book_path, encoding="utf-8", errors="ignore").read().lower()
+            fabricated = [q for q in quotes if q.lower() not in bk]
+            add("S12", "authorial voice is real (every signature quote is verbatim in the source)", "hard",
+                not fabricated,
+                "every signature quote is verbatim in the book" if not fabricated
+                else f"NOT verbatim in the source (fabricated/misattributed voice): {fabricated}")
+        else:
+            add("S12", "authorial voice is real (vs the authoritative resource)", "hard", True,
+                "NOT-RUN — authoritative resource absent; signature quotes verified verbatim only where "
+                "the book is present, never a bare pass", notrun=True)
+
     return checks
 
 
