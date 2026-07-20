@@ -5,7 +5,8 @@
     "book": "A Philosophy of Software Design (Ousterhout)",
     "on_disk_proxy": "~/Downloads/PM-OS/context-library/strategy/philosophy-of-software-design-reference.md",
     "book_text": "~/Downloads/A Philosophy of Software Design - John Ousterhout.pdf",
-    "verified_reference": "~/Downloads/PM-OS/.claude/skills/ousterhout-guru/reference.verified.md"
+    "verified_reference": "~/Downloads/PM-OS/context-library/strategy/philosophy-of-software-design-reference.md",
+    "note": "consolidated 2026-07-19: all 4 Ousterhout skills read ONE shared SSOT (context-library/.../philosophy-of-software-design-reference.md); per-skill copy deleted"
   },
   "closed_vocab": [
     "shallow module",
