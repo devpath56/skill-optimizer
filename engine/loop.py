@@ -26,6 +26,7 @@ import sys
 ENG = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ENG)
 import craft  # reuse the deterministic craft grader (evaluate)
+import ingest  # ingestion step: make a source retrievable (build the cited chunk index)
 
 
 def load(cart):
@@ -66,22 +67,32 @@ def retrieve(query, man, cart, log):
     ret = man.get("retrieval", {})
     book_rel = ret.get("source_first", "")
     book_path = os.path.join(cart, book_rel) if book_rel else ""
-    # 1) the authoritative SOURCE (the book) first
-    if book_rel and os.path.exists(book_path):
+    idx_path = os.path.join(cart, "source", "book.index.jsonl")
+    # 1a) the STRUCTURED INDEX first (cited chunks, front-matter pre-filtered) — the best retrieval
+    if os.path.exists(idx_path):
+        chunks = [json.loads(l) for l in open(idx_path, encoding="utf-8") if l.strip()]
+        hits = [c for c in chunks if not c.get("frontmatter") and query.lower() in c["text"].lower()]
+        if hits:
+            best = max(hits, key=lambda c: c["text"].lower().count(query.lower()))
+            cite = f"Ch {best.get('chapter')} p.{best.get('page')}"
+            j = best["text"].lower().find(query.lower())
+            passage = " ".join(best["text"][max(0, j - 60): j + 240].split())
+            log.append(f"    retrieve('{query}') -> index chunk {best['id']} [{cite}]; "
+                       f"{len(hits)} content chunks match (front-matter pre-filtered by ingest.py)")
+            return {"found": True, "source": f"book.index.jsonl [{cite}]", "passage": passage, "refused": []}
+        log.append(f"    retrieve('{query}') -> not in indexed source; consulting authoritative allowlist")
+    # 1b) fallback: raw blob if the index was never built — TOC-skip + digit-density heuristic
+    elif book_rel and os.path.exists(book_path):
         text = open(book_path, encoding="utf-8", errors="ignore").read()
         low, L = text.lower(), len(text)
         hits = [m.start() for m in re.finditer(re.escape(query.lower()), low)]
         if hits:
-            # force a BETTER retrieval: skip front-matter (TOC/preface < 15%), and prefer a SUBSTANTIVE
-            # passage — one whose window is prose, not an index (low digit density). The first string
-            # match is usually the table of contents; that is not grounding.
             body = [h for h in hits if h > L * 0.15] or hits
             best = next((h for h in body
                          if sum(ch.isdigit() for ch in text[h:h + 260]) / 260 < 0.03), body[0])
             passage = " ".join(text[max(0, best - 40): best + 260].split())
-            log.append(f"    retrieve('{query}') -> FOUND in authoritative source ({book_rel}); "
-                       f"{len(hits)} hits, chose substantive body passage at {round(100 * best / L)}% "
-                       f"(skipped TOC/front-matter)")
+            log.append(f"    retrieve('{query}') -> FOUND in raw source ({book_rel}); {len(hits)} hits, "
+                       f"body passage at {round(100 * best / L)}% (run ingest.py for cited chunks)")
             return {"found": True, "source": book_rel, "passage": passage, "refused": []}
         log.append(f"    retrieve('{query}') -> not in source; consulting authoritative allowlist")
     else:
@@ -170,6 +181,11 @@ def main(cart, max_rounds=3):
     skill_text = open(skill_path, encoding="utf-8").read()
     stage_dir = os.path.join(cart, "staging", "loop")
     os.makedirs(stage_dir, exist_ok=True)
+
+    # ingestion step: once a source is present, make it RETRIEVABLE — build the cited chunk index so
+    # retrieval returns coherent, citable passages (front-matter pre-filtered) instead of blob windows.
+    if not os.path.exists(os.path.join(cart, "source", "book.index.jsonl")) and ingest.build(cart):
+        print("[ingest] source made retrievable -> source/book.index.jsonl (cited chunks)\n")
 
     report = {"cartridge": os.path.basename(cart.rstrip("/")), "rounds": []}
     print(f"\n=== PROGRESSIVE DRIVER · {report['cartridge']} ===")

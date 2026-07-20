@@ -147,8 +147,18 @@ python3 engine/gate_durability.py cartridges/ousterhout # SELF-DURABILITY: --sel
                                                          # neutered gate (mutate -> run -> restore; CF-067)
 python3 engine/craft.py     cartridges/ousterhout        # CRAFT axis: does SKILL.md codify the craft? (table)
 python3 engine/craft.py     cartridges/ousterhout --json # machine-readable craft scorecard (for agents)
+python3 engine/ingest.py    cartridges/ousterhout        # INGEST: build the cited chunk index (retrievability)
 python3 engine/loop.py      cartridges/ousterhout        # PROGRESSIVE DRIVER: run the actual optimize loop
 ```
+
+## Source ingestion (retrievability) · `engine/ingest.py`
+Once a source is supplied (PDF → `book.norm.txt`), a second step makes it **retrievable**: `ingest.py`
+deterministically chunks it into a **cited JSONL index** (`source/book.index.jsonl`) — one record per
+page with `{page, chapter, chapter_title, frontmatter, text}`. Retrieval then returns a coherent,
+**cited** chunk ("Ch 10, p.88") and skips front-matter/TOC by a flag, instead of a char-window from a
+blob. Deterministic (regex on page/chapter markers, no model); the `text` stays verbatim so the
+fidelity checks still grep it. The index is a derived artifact of the licensed source → **gitignored**.
+The loop builds it automatically the first time it sees a source.
 
 ## Progressive driver (the actual loop) · `engine/loop.py`
 Runs the optimize loop for real: **eval → deficiency → retrieve(authoritative, gated) → fix → re-eval →
