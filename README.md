@@ -89,3 +89,19 @@ load-bearing property), invoke the skill on each, run the scorer, fix RED checks
 Tenant #1 `ousterhout-guru`: efficacy SHIP-eligible on a 3-doc probe slice; fidelity F2 8/8, F3
 PASS after one iterate round (fixed 6 fabricated quotes in the distillation). Not yet at full gate
 — judge axes (E5/E3-validity) pending, golden set not scaled to 15. See `RUN-01.md`.
+
+## Pre-ship gate (the main entry point)
+`gate.py` answers the real question — **would this skill ship to the team?** — and drops into CI / a pre-commit hook.
+```
+python3 engine/gate.py cartridges/ousterhout            # SHIP (0) / BLOCK (1) / INCOMPLETE (6)
+python3 engine/gate.py --selftest cartridges/ousterhout # NEGATIVE CONTROL: gate must BLOCK a degraded
+                                                         # skill and SHIP the real one (else it is vacuous)
+```
+A gate that only ever says SHIP is worthless (CF-065/CF-067), so `--selftest` degrades the flaw-laden output
+(recall drops below bar) and **requires the gate to flip to BLOCK**. The "fresh-clone smoke test" is just the
+degenerate case: the gate runs in any environment and fails loud.
+
+## Loop ledger (SSOT for visibility)
+`cartridges/<skill>/loop-log.jsonl` — append-only record of every **run**, **decision**, and **self-correction**
+in the self-improving loop (mirrors Trident's `failures.jsonl`; schema in `loop-log.schema.json`). This is the
+visibility layer: how many runs, what was decided, what got reversed — one line each, never rewritten.

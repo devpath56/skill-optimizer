@@ -1,0 +1,9 @@
+{
+  "title": "skill-optimizer loop-log (SSOT, JSONL — one record per line, append-only)",
+  "note": "Mirrors Trident's failures.jsonl. Records the self-improving loop's runs + decisions so the loop is auditable, not scattered. Append a new line each run/decision; never rewrite history.",
+  "record_types": {
+    "decision": {"required": ["id", "type", "q", "choice"], "id_prefix": "D", "fields": {"q": "the fork/question", "choice": "what was decided", "reversed": "bool — true if later self-corrected", "note": "why reversed / context"}},
+    "run": {"required": ["id", "type", "name"], "id_prefix": "R", "fields": {"probe": "Phase-0 gate result", "score": "bar result", "iterate": "what changed", "stage1_proxy": "", "stage2_judge": "", "result": "", "decision_refs": "list of D-ids this run acted on"}},
+    "correction": {"required": ["id", "type", "what", "fix"], "id_prefix": "C", "fields": {"what": "the defect", "fix": "the correction", "caught_by": "which check/prong caught it"}}
+  }
+}
