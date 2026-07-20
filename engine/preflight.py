@@ -47,6 +47,11 @@ def main(cart):
     committed = [("manifest", man_path)]
     for name in ("BAR.md",):
         committed.append((name, os.path.join(cart, name)))
+    # the skill-under-test itself: required ONLY when vendored (a cartridge-relative path). An external
+    # ~/absolute path is a not-committed subject (back-compat) and is not enforced here.
+    sf = man.get("skill_file", "")
+    if sf and not sf.startswith(("~", "/")):
+        committed.append(("skill-under-test (vendored)", os.path.join(cart, sf)))
     if os.path.exists(os.path.join(cart, "candidates.json")):
         committed.append(("candidates.json", os.path.join(cart, "candidates.json")))
     for item in man.get("golden_set", []):

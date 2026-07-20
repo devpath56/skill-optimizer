@@ -1,6 +1,6 @@
 {
   "skill": "ousterhout-guru",
-  "skill_file": "~/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md",
+  "skill_file": "skill/SKILL.md",
   "authoritative_source": {
     "book": "A Philosophy of Software Design (Ousterhout)",
     "on_disk_proxy": "~/Downloads/PM-OS/context-library/strategy/philosophy-of-software-design-reference.md",
@@ -68,6 +68,12 @@
       "key": null,
       "output": "offdomain-out-01.md",
       "state": "off-domain"
+    },
+    {
+      "doc": "empty-01.md",
+      "key": null,
+      "output": "empty-out-01.md",
+      "state": "empty"
     }
   ],
   "fidelity": {
@@ -87,5 +93,6 @@
     "F2_vocab": "8 named red flags confirmed present in book (subset of book's full ~14)",
     "closes": "CF-068 \u2014 bar was previously authored from the proxy before the book was in hand",
     "rule": "fidelity criteria are derived from the primary source, never a distillation"
-  }
+  },
+  "skill_file_provenance": "vendored byte-faithful snapshot of ~/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md (see skill/PROVENANCE.md). Engine does not score from it; preflight requires it present (self-containment)."
 }

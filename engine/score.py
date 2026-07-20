@@ -30,7 +30,21 @@ def load_json(p):
 NEG = re.compile(r"\b(no|not|without|isn'?t|aren'?t|never|opposite)\b", re.I)
 
 def sections_present(text, expected):
-    return [s for s in expected if re.search(re.escape(s), text, re.I)]
+    """A section counts as EMITTED only when its name is a structural HEADING that introduces content —
+    a markdown ATX heading line (`## Complexity Diagnosis`, optional leading number) or a line that is
+    ENTIRELY a bold title (`**Complexity Diagnosis**`, optional number/colon, no trailing prose). A name
+    merely MENTIONED in running text or a preview/menu list (`1. **Complexity Diagnosis** — what you'll
+    get`) does NOT count — that is a decline, not an emitted section. The prior bare-substring match
+    counted a decline's own menu preview as a full 5/5 emission, flipping the `empty` state's E-ref to a
+    false FAIL (the empty-01 golden is the regression guard for this; reverting to substring re-fails it)."""
+    out = []
+    for s in expected:
+        n = re.escape(s)
+        atx = rf"^\s*#{{1,6}}\s*(?:\d+[.)]\s*)?{n}"
+        bold = rf"^\s*(?:\d+[.)]\s*)?\*\*{n}[^*\n]*\*\*\s*:?\s*$"
+        if re.search(atx, text, re.I | re.M) or re.search(bold, text, re.I | re.M):
+            out.append(s)
+    return out
 
 def red_flags_section(text, expected):
     """Scope flag detection to the 'Red Flags Found' section so mentions in other
