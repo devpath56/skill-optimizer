@@ -19,13 +19,24 @@ writing a new cartridge; the engine never changes.
   (source → distillation → skill)? Vocab presence is deterministic; accuracy/no-distortion is a
   grounded judge that must quote the source.
 - **Craft** (the skill file itself) — does `SKILL.md`, *as written*, **codify the craft it applies**?
-  Deterministic static checks — vocab, output contract, diagnostic framework, source grounding
-  (HARD); refusal instruction, worked example (advisory). Zero model cost, machine-readable for
-  agents (`engine/craft.py --json`): hand an agent the scorecard instead of asking it to read the
-  skill and fuzzily judge "is this well-crafted?"
+  Deterministic static checks — vocab, output contract, diagnostic framework, source grounding,
+  **grounding-travels (S7)** and **grounding-is-real vs the book (S8)** (HARD); refusal instruction,
+  worked example (advisory). Zero model cost, machine-readable for agents (`engine/craft.py --json`):
+  hand an agent the scorecard instead of asking it to read the skill and fuzzily judge "is this
+  well-crafted?"
 
 They fail independently: a skill can behave well, misquote its source, *and* fail to codify its own
 craft. Check all three.
+
+## Grader principle & input contract
+- **Every criterion is adversarial, deterministic, binary** (Hamel / `llm-evals`): default to FAIL and
+  make the skill *prove* the pass. No Likert, no scores, no fuzzy judge where code can decide. Example:
+  S7 assumes the skill *cannot* deliver its promised anecdotes and forces it to prove otherwise; the
+  ousterhout skill **failed S7** (promises anecdotes, ships none) until its grounding was bundled — the
+  bar was met by fixing the skill, never by relaxing the check.
+- **Input = a skill file OR an authoritative resource** (or both). The resource is first-class: S8
+  grades the skill's anecdotes against the real book (`source/book.norm.txt`) and is NOT-RUN + loud
+  when the book is absent, never a bare pass.
 
 ## Layout
 ```
