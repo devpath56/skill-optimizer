@@ -3,28 +3,6 @@
   "rounds": [
     {
       "round": 0,
-      "picked": "S5",
-      "query": "define errors out of existence",
-      "retrieval": {
-        "found": true,
-        "source": "source/book.norm.txt",
-        "refused": []
-      },
-      "closed": true
-    },
-    {
-      "round": 1,
-      "picked": "S9",
-      "query": "deep module",
-      "retrieval": {
-        "found": true,
-        "source": "source/book.norm.txt",
-        "refused": []
-      },
-      "closed": true
-    },
-    {
-      "round": 2,
       "deficiencies": [],
       "converged": true
     }

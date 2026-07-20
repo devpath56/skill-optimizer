@@ -152,6 +152,16 @@ its fix — the fix is never invented.
 - **Demonstrated**: caught `S5` (refusal not codified) → retrieved the book's own *"define errors out of
   existence"* (chose the 44% body passage over the TOC) → staged a grounded refusal instruction → S5
   `False→True` → converged to SHIP. A book-absent query correctly refused `medium.com`/random blogs.
+- **Fix handlers** are deterministic templates today; an open-ended deficiency with no template routes to
+  a *model iterate step* (interface defined, generator parked — the DSPy-class trigger, see `MIGRATION.md`).
+
+## Governance (multi-team) · `engine/comutation_guard.py`
+Skill and its acceptance bar live in one repo, but the **bar is an independent authority** over the
+skill: it must not move silently in the same change that edits the skill it grades. The co-mutation
+guard FLAGS any change touching both a **skill-side** file (`skill/`) and a **bar-side** file
+(`manifest.json`, `BAR.md`, `validation/`, `truthfulness/`) without a `BAR-CHANGE-RATIFIED:` commit
+marker — so you can't quietly move the goalposts while regressing the player. Non-vacuous `--selftest`;
+runs as a PR check (`origin/main...HEAD`), NOT-RUN-safe where no base ref exists.
 `gate_durability.py` closes the last loop: `--selftest` proves the gate isn't vacuous, and this proves
 `--selftest` isn't vacuous — it mutates `gate.py`'s decision logic (always-SHIP; drop the efficacy
 reason) and **requires** `--selftest` to flip to failure, restoring the file byte-for-byte. A stale
