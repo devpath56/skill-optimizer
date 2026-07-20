@@ -10,3 +10,4 @@ cartridges/*/source/*.epub
 # harness noise
 **/stop_hook_fired.log
 .claude/
+cartridges/*/source/book.index.jsonl
