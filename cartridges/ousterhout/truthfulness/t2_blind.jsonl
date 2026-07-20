@@ -1,0 +1,12 @@
+{"id": "T2-01", "claim": "Ousterhout defines a deep module as one whose interface is much simpler than its implementation."}
+{"id": "T2-02", "claim": "The book argues that working code is not enough: you must invest in design (strategic over tactical programming)."}
+{"id": "T2-03", "claim": "Ousterhout says good names have two properties: precision and consistency."}
+{"id": "T2-04", "claim": "The book is explicitly critical of test-driven development, calling it tactical programming."}
+{"id": "T2-05", "claim": "Ousterhout recommends defining errors out of existence, using Tcl's unset as an example."}
+{"id": "T2-06", "claim": "He warns that comments repeating the code are a red flag."}
+{"id": "T2-07", "claim": "Ousterhout's 'Three Dimensions in Tension' framework balances performance, generality, and safety."}
+{"id": "T2-08", "claim": "As Ousterhout writes, 'you can't design your way out of bad code by adding comments.'"}
+{"id": "T2-09", "claim": "Ousterhout recommends writing tests first, TDD-style, as a complement to writing comments first."}
+{"id": "T2-10", "claim": "The book gives a rule that any change touching more than three unrelated files signals a complexity problem."}
+{"id": "T2-11", "claim": "Ousterhout illustrates defining errors out of existence with a Tcl substring() function."}
+{"id": "T2-12", "claim": "He offers word-lists of banned vague names like data, info, and handle to avoid."}
