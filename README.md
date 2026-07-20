@@ -105,7 +105,13 @@ Treat every number here as provisional until the sets are scaled + human-labeled
 python3 engine/gate.py cartridges/ousterhout            # SHIP (0) / BLOCK (1) / INCOMPLETE (6)
 python3 engine/gate.py --selftest cartridges/ousterhout # NEGATIVE CONTROL: gate must BLOCK a degraded
                                                          # skill and SHIP the real one (else it is vacuous)
+python3 engine/gate_durability.py cartridges/ousterhout # SELF-DURABILITY: --selftest must itself catch a
+                                                         # neutered gate (mutate -> run -> restore; CF-067)
 ```
+`gate_durability.py` closes the last loop: `--selftest` proves the gate isn't vacuous, and this proves
+`--selftest` isn't vacuous — it mutates `gate.py`'s decision logic (always-SHIP; drop the efficacy
+reason) and **requires** `--selftest` to flip to failure, restoring the file byte-for-byte. A stale
+mutation whose target text is missing is a HARD FAIL, never a silent skip (the census-incident class).
 A gate that only ever says SHIP is worthless (CF-065/CF-067), so `--selftest` degrades the flaw-laden output
 (recall drops below bar) and **requires the gate to flip to BLOCK**. The "fresh-clone smoke test" is just the
 degenerate case: the gate runs in any environment and fails loud.
