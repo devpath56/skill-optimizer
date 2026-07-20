@@ -21,10 +21,13 @@ writing a new cartridge; the engine never changes.
 - **Craft** (the skill file itself) — does `SKILL.md`, *as written*, **codify the craft it applies**?
   Deterministic static checks — vocab, output contract, diagnostic framework, source grounding,
   **grounding-travels (S7)**, **grounding-is-real vs the book (S8)**, **recall-mnemonic-grounded (S10)**,
-  **authorial-voice-real (S12)** (HARD); refusal instruction, worked example, **recall-mnemonic-taught
-  (S9)**, **authorial-voice-taught (S11)** (advisory). The **voice** dimension asks: can a teaching agent
-  speak in the *expert's* voice? — the skill must surface ≥N of the author's signature quotes (S11), each
-  verbatim in the book so the voice is never fabricated/misattributed (S12, the origin-failure guard). The mnemonic
+  **authorial-voice-real (S12)**, **voice-bar-integrity (S13)** (HARD); refusal instruction, worked
+  example, **recall-mnemonic-taught (S9)**, **authorial-voice-taught (S11)** (advisory). The **voice**
+  dimension asks: can a teaching agent speak in the *expert's* voice? — the skill must surface ≥N
+  **sharp, interview-grade** signature quotes (S11): a verbatim-but-generic platitude ("modules should be
+  deep") does *not* count; only a *tradeoff* ("interfaces much simpler than implementations") or a
+  *coined mechanism* ("define errors out of existence") does. S12 keeps each verbatim (no fabrication);
+  **S13 forbids declaring a platitude as a signature quote** so the bar can't be padded. The mnemonic
   dimension asks: can a teaching agent teach a memorable acronym for the key principles? — encoded as
   DEEP (Deep modules · Errors out of existence · Ease of reading · Pull complexity down), each letter
   verified verbatim in the book so the acronym is never fabricated. Zero model cost, machine-readable
