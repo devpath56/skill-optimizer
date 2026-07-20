@@ -92,7 +92,13 @@ load-bearing property), invoke the skill on each, run the scorer, fix RED checks
 
 ## Status (honest, provisional)
 Tenant #1 `ousterhout-guru`:
-- **efficacy**: SHIP-eligible on a **3-doc probe slice (recall n=1 flaw-laden — NOT statistically
+- **package**: self-contained — the **skill-under-test is vendored** (`cartridges/ousterhout/skill/`,
+  byte-faithful snapshot, copyright-vetted) and preflight fails loud if it goes missing. An agent can
+  read, invoke, and iterate the real subject, not just re-score frozen outputs.
+- **state matrix**: **4/5 rows live** (flaw-laden, clean, off-domain, empty — all deterministic E-ref/E2/E4).
+  `ambiguous` remains PENDING (it needs the validated E5 judge). The `empty` row also doubles as the
+  regression guard for the `sections_present` heading-vs-mention fix (revert it → empty E-ref re-fails → gate BLOCKs).
+- **efficacy**: SHIP-eligible on a **4-doc probe slice (recall n=1 flaw-laden — NOT statistically
   robust)**. Not a full verdict; scale the golden set to ~15 for real recall/precision.
 - **fidelity**: F2 8/8, F3 PASS after one iterate round (fixed 6 fabricated quotes).
 - **E5 judge**: VALIDATED but **PROVISIONAL (n=18 by-construction, one-shot, no train/test split)** —
