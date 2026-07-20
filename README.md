@@ -21,8 +21,13 @@ writing a new cartridge; the engine never changes.
 - **Craft** (the skill file itself) — does `SKILL.md`, *as written*, **codify the craft it applies**?
   Deterministic static checks — vocab, output contract, diagnostic framework, source grounding,
   **grounding-travels (S7)**, **grounding-is-real vs the book (S8)**, **recall-mnemonic-grounded (S10)**,
-  **authorial-voice-real (S12)**, **voice-bar-integrity (S13)** (HARD); refusal instruction, worked
-  example, **recall-mnemonic-taught (S9)**, **authorial-voice-taught (S11)** (advisory). The **voice**
+  **authorial-voice-real (S12)**, **voice-bar-integrity (S13)**, **tradeoff-decision-key-real (S15)**
+  (HARD); refusal instruction, worked example, **recall-mnemonic-taught (S9)**, **authorial-voice-taught
+  (S11)**, **tradeoff-decision-recall (S14)** (advisory). The **trade-off recall** dimension (S14/S15)
+  asks: can a teaching agent reference the source's *actual* trade-off case studies (Tcl `unset`,
+  deleting an open file, `substring`, the RAMCloud rewrite…)? — the bundle must carry ≥90% of them
+  (S14), each verbatim in the book so the answer key can't be invented or padded (S15). This is E2-style
+  recall applied to the source's anecdotes. The **voice**
   dimension asks: can a teaching agent speak in the *expert's* voice? — the skill must surface ≥N
   **sharp, interview-grade** signature quotes (S11): a verbatim-but-generic platitude ("modules should be
   deep") does *not* count; only a *tradeoff* ("interfaces much simpler than implementations") or a

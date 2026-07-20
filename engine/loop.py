@@ -43,6 +43,7 @@ RETRIEVAL_QUERY = {
     "S5": "define errors out of existence",   # refusal/graceful-missing-input <- the book's own principle
     "S9": "deep module",                       # the recall mnemonic's anchor principle (DEEP)
     "S11": "simpler than their implementations",  # authorial voice — a SHARP anchor, not a platitude
+    "S14": "exception masking",                    # trade-off case studies — anchor a missing decision
 }
 
 
@@ -144,6 +145,19 @@ def apply_fix(deficiency, retrieval, skill_text, man):
             "verbatim, fair-use, and interview-grade (a tradeoff or a coined mechanism, never a platitude), "
             "from *A Philosophy of Software Design*:\n"
             f"{rows}\n\n(Each is verbatim in the source; see `skill/GROUNDING.md`.)\n")
+        anchor = "## Example Invocation"
+        if anchor in skill_text:
+            return skill_text.replace(anchor, block + "\n" + anchor, 1)
+        return skill_text + block
+    if did == "S14":
+        td = man.get("craft", {}).get("tradeoff_decisions", [])
+        rows = "\n".join(f"- **{d['name']}**" for d in td)
+        block = (
+            "\n## Trade-off case studies to teach\n"
+            "Ground every trade-off in the author's ACTUAL decisions from the book — never invent one. "
+            "These are the source's case studies (all verbatim in the source; see `skill/GROUNDING.md`):\n"
+            f"{rows}\n")
+        skill_text = re.sub(r"\n## Trade-off case studies to teach.*?(?=\n## |\Z)", "\n", skill_text, flags=re.S)
         anchor = "## Example Invocation"
         if anchor in skill_text:
             return skill_text.replace(anchor, block + "\n" + anchor, 1)
