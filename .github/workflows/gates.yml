@@ -1,0 +1,33 @@
+name: gates
+# Actionable audit trail: every push/PR must pass the optimizer's own gates.
+# A change that breaks efficacy, fidelity, truthfulness, or the ledger fails the build.
+# All checks are deterministic on committed data (no model calls, no secrets, no network):
+# the judge verdicts are pre-computed and committed; full-book fidelity is NOT-RUN (book gitignored).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: preflight (repo integrity + readiness)
+        run: python3 engine/preflight.py cartridges/ousterhout
+
+      - name: pre-ship gate (SHIP/BLOCK)
+        run: python3 engine/gate.py cartridges/ousterhout
+
+      - name: gate negative control (must BLOCK a degraded skill)
+        run: python3 engine/gate.py --selftest cartridges/ousterhout
+
+      - name: truthfulness gate (RG + T1 + T2 + T4, fail-closed)
+        run: python3 cartridges/ousterhout/truthfulness/gate.py cartridges/ousterhout/truthfulness
+
+      - name: judge calibration (TPR/TNR >= 0.85)
+        run: python3 cartridges/ousterhout/validation/calibrate.py
