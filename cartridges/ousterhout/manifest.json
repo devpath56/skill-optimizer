@@ -147,5 +147,16 @@
         "10,000 line function"
       ]
     }
+  },
+  "retrieval": {
+    "source_first": "source/book.norm.txt",
+    "authoritative_allowlist": [
+      "web.stanford.edu/~ouster",
+      "www.usenix.org",
+      "dl.acm.org",
+      "cs.stanford.edu"
+    ],
+    "refuse_nonallowlisted": true,
+    "note": "The loop retrieves from the authoritative SOURCE (book) first. Only if the source lacks the material does it consult the allowlist (authoritative sites). Any non-allowlisted source is REFUSED, never silently fetched. Deterministic-first; a live fallback would use WebFetch restricted to the allowlist."
   }
 }

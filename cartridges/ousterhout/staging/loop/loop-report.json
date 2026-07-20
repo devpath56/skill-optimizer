@@ -1,0 +1,21 @@
+{
+  "cartridge": "ousterhout",
+  "rounds": [
+    {
+      "round": 0,
+      "picked": "S5",
+      "query": "define errors out of existence",
+      "retrieval": {
+        "found": true,
+        "source": "source/book.norm.txt",
+        "refused": []
+      },
+      "closed": true
+    },
+    {
+      "round": 1,
+      "deficiencies": [],
+      "converged": true
+    }
+  ]
+}
