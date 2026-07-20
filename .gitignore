@@ -4,3 +4,7 @@ cartridges/*/source/*.pdf
 cartridges/*/source/*.epub
 # Captured skill outputs are regenerable traces
 cartridges/*/golden/*-out-*.md
+
+# harness noise
+**/stop_hook_fired.log
+.claude/
