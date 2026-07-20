@@ -1,11 +1,11 @@
 {
   "skill": "ousterhout-guru",
-  "skill_file": "/Users/devanshpathak/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md",
+  "skill_file": "~/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md",
   "authoritative_source": {
     "book": "A Philosophy of Software Design (Ousterhout)",
-    "on_disk_proxy": "/Users/devanshpathak/Downloads/PM-OS/context-library/strategy/philosophy-of-software-design-reference.md",
-    "book_text": "/Users/devanshpathak/Downloads/A Philosophy of Software Design - John Ousterhout.pdf",
-    "verified_reference": "/Users/devanshpathak/Downloads/PM-OS/.claude/skills/ousterhout-guru/reference.verified.md"
+    "on_disk_proxy": "~/Downloads/PM-OS/context-library/strategy/philosophy-of-software-design-reference.md",
+    "book_text": "~/Downloads/A Philosophy of Software Design - John Ousterhout.pdf",
+    "verified_reference": "~/Downloads/PM-OS/.claude/skills/ousterhout-guru/reference.verified.md"
   },
   "closed_vocab": [
     "shallow module",

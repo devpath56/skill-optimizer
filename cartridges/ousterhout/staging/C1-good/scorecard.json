@@ -26,5 +26,5 @@
   "tie_note": "proxy TIE at 100.0 among ['C1-good', 'C3-severity']; provisional winner = C1-good (stable order). Full-bar (STAGE 2) breaks the tie.",
   "stage2_full_bar": "PENDING-HOOK \u2014 fidelity (concept coverage / invented principles / anecdote correctness) NOT yet checked; needs the checker model. Full-bar may re-order tied survivors.",
   "promotion": "STAGED ONLY \u2014 the live skill_file is untouched; a human/next step applies.",
-  "live_skill_file": "/Users/devanshpathak/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md"
+  "live_skill_file": "~/Downloads/PM-OS/.claude/skills/ousterhout-guru/SKILL.md"
 }
