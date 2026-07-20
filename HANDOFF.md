@@ -62,7 +62,13 @@ the book (external licensed dep) absent → full-book F3 NOT-RUN (loud), never a
 | F1/F3 fidelity | concept coverage; no invented principle; anecdotes correct | judge vs authoritative source text |
 | F2 vocab | all named concepts present in skill | deterministic (grep) |
 | F4 hop-attribution | defect tagged source→proxy vs proxy→skill | manual, needs source text |
-| S1–S6 craft | the SKILL FILE **codifies** the craft it applies: vocab, output contract, diagnostic framework, source grounding (HARD); refusal-by-instruction, worked example (advisory) | deterministic static check on `skill_file` (`engine/craft.py`), machine-readable `--json` |
+| S1–S8 craft | the SKILL FILE **codifies** the craft it applies: vocab, contract, framework, source grounding, **grounding-travels (S7)**, **grounding-is-real-vs-book (S8)** (HARD); refusal, example (advisory) | deterministic static check on `skill_file` + authoritative resource (`engine/craft.py`), machine-readable `--json` |
+
+**Grader principle (Hamel / `llm-evals`): every craft criterion is adversarial, deterministic, binary.**
+Default to FAIL; the skill proves the pass. **Input is a skill file OR an authoritative resource** (or
+both) — S8 grades the skill's promised anecdotes against the real book and is NOT-RUN + loud when the
+book is absent. S7 caught the ousterhout skill promising anecdotes it couldn't deliver; the fix bundled
+the grounding, never relaxed the check.
 
 **Craft (S) axis — the third leg.** Efficacy grades outputs, fidelity grades content-vs-source; craft
 grades the **skill file itself**. It answers "does this skill, as written, encode what it must apply?"

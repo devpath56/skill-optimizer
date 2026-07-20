@@ -11,6 +11,15 @@ exactly what is missing, so the judgement is cheap, reproducible, and localizabl
 Cartridge-driven: WHAT must be codified is declared in `manifest.craft` and reused from `closed_vocab` /
 `expected_sections`. The engine holds no skill knowledge.
 
+Grader principle (Hamel / llm-evals): every criterion is an ADVERSARIAL, DETERMINISTIC, BINARY
+pass/fail. Default to FAIL and make the skill PROVE the pass — no Likert, no scores, no fuzzy judge
+where code can decide. A green tick is earned, never assumed.
+
+Input contract: the skill-builder grades a skill file AGAINST an authoritative resource. Both are
+first-class inputs (manifest.skill_file + manifest.authoritative_source / manifest.craft.grounding).
+Checks that need the resource run when it is present and are NOT-RUN (loud) when it is absent — never
+a bare pass.
+
 Checks (HARD = ship-blocking; ADVISORY = reported, not blocking):
   S1 HARD      vocab codified        — every closed_vocab red-flag name appears in the skill
   S2 HARD      contract codified     — every expected_section is declared in the skill
@@ -18,6 +27,10 @@ Checks (HARD = ship-blocking; ADVISORY = reported, not blocking):
   S4 HARD      source grounding      — the skill points at its authoritative source (any source_marker)
   S5 ADVISORY  refusal codified      — decline-on-empty is INSTRUCTED, not left to model default
   S6 ADVISORY  worked example        — the craft is shown, not only told
+  S7 HARD      grounding travels     — promised anecdotes are DELIVERABLE: the bundle carries reachable
+                                       grounding (else a downstream teaching agent must fabricate)
+  S8 HARD*     grounding is real     — the bundled grounding's anecdotes are VERBATIM in the authoritative
+                                       resource and none are fabricated (*NOT-RUN + loud when the book is absent)
 
   python3 engine/craft.py cartridges/<name>            # human table  · exit 0 ok / 1 HARD gap / 6 missing
   python3 engine/craft.py cartridges/<name> --json     # machine-readable scorecard for agents (stdout)
@@ -57,13 +70,14 @@ def _hits(text, terms):
     return [t for t in terms if t.lower() in low]
 
 
-def evaluate(text, man):
-    """Deterministic craft checks over the skill text. Returns a list of check dicts."""
+def evaluate(text, man, cart="."):
+    """Deterministic craft checks over the skill text + the authoritative resource. Returns check dicts."""
     craft = man.get("craft", {})
     checks = []
 
-    def add(cid, name, kind, ok, detail):
-        checks.append({"id": cid, "name": name, "kind": kind, "pass": bool(ok), "detail": detail})
+    def add(cid, name, kind, ok, detail, notrun=False):
+        checks.append({"id": cid, "name": name, "kind": kind, "pass": bool(ok),
+                       "detail": detail, "notrun": bool(notrun)})
 
     miss = _missing(text, man.get("closed_vocab", []))
     add("S1", "vocab codified (all red-flag names present in the skill)", "hard",
@@ -93,6 +107,40 @@ def evaluate(text, man):
     add("S6", "worked example present (craft shown, not only told)", "advisory",
         bool(hits), f"present via {hits}" if hits else "no worked example found")
 
+    # S7/S8 grounding — adversarial: a skill that PROMISES book anecdotes but ships no reachable,
+    # book-verified grounding forces a downstream teaching agent to fabricate. Graded against the
+    # authoritative resource (the book you supplied); NOT-RUN + loud when that resource is absent.
+    g = craft.get("grounding", {})
+    if any(p.lower() in text.lower() for p in g.get("promises", [])):
+        bundle_rel = g.get("bundle", "")
+        bundle_path = os.path.join(cart, bundle_rel) if bundle_rel else ""
+        reachable = bool(bundle_rel) and os.path.exists(bundle_path)
+        add("S7", "grounding travels with the skill (promised anecdotes are deliverable)", "hard",
+            reachable,
+            f"bundle carries reachable grounding: {bundle_rel}" if reachable else
+            f"skill PROMISES book anecdotes but the bundle carries NO reachable grounding "
+            f"({bundle_rel or 'none declared'}) — a downstream agent must fabricate them")
+
+        book_rel = g.get("authoritative_resource", "")
+        book_path = os.path.join(cart, book_rel) if book_rel else ""
+        probes = g.get("anecdote_probes", [])
+        fabricated = g.get("fabricated_probes", [])
+        if reachable and book_rel and os.path.exists(book_path):
+            gt = open(bundle_path, encoding="utf-8", errors="ignore").read().lower()
+            bk = open(book_path, encoding="utf-8", errors="ignore").read().lower()
+            ungrounded = [p for p in probes if p.lower() not in gt or p.lower() not in bk]
+            invented = [p for p in fabricated if p.lower() in gt]
+            add("S8", "grounding is real (anecdotes verbatim in the authoritative resource, none fabricated)",
+                "hard", not ungrounded and not invented,
+                "all probe anecdotes are book-present and no fabrications leaked"
+                if not ungrounded and not invented
+                else f"ungrounded/missing {ungrounded} · fabricated present {invented}")
+        else:
+            why = ("authoritative resource absent (book gitignored on this checkout)"
+                   if reachable else "no reachable grounding to verify")
+            add("S8", "grounding is real (vs the authoritative resource)", "hard", True,
+                f"NOT-RUN — {why}; verified only where the book is present, never a bare pass", notrun=True)
+
     return checks
 
 
@@ -113,7 +161,7 @@ def emit(cart, as_json=False):
                   f"{'INCOMPLETE' if status == 'missing' else 'NOT-RUN'}: {note}")
         sys.exit(6 if status == "missing" else 0)
 
-    checks = evaluate(text, man)
+    checks = evaluate(text, man, cart)
     hard_fail = [c["id"] for c in checks if c["kind"] == "hard" and not c["pass"]]
     adv_fail = [c["id"] for c in checks if c["kind"] == "advisory" and not c["pass"]]
 
@@ -128,7 +176,12 @@ def emit(cart, as_json=False):
     print("\n=== CRAFT AXIS (S) · is the architect's craft codified in the skill file? ===")
     print(f"  skill: {path}\n")
     for c in checks:
-        mark = "ok      " if c["pass"] else ("HARD FAIL" if c["kind"] == "hard" else "ADVISORY ")
+        if c.get("notrun"):
+            mark = "NOT-RUN "
+        elif c["pass"]:
+            mark = "ok      "
+        else:
+            mark = "HARD FAIL" if c["kind"] == "hard" else "ADVISORY "
         print(f"  {mark} {c['id']} {c['name']}")
         print(f"            {c['detail']}")
     print()
@@ -149,11 +202,11 @@ def selftest(cart):
     if status != "ok":
         print(f"  craft --selftest: skill not vendored ({status}) — cannot run the control")
         sys.exit(1)
-    base = evaluate(text, man)
+    base = evaluate(text, man, cart)
     base_hard_ok = all(c["pass"] for c in base if c["kind"] == "hard")
     term = (man.get("closed_vocab") or [""])[0]
     degraded = re.sub(re.escape(term), "XXXX", text, flags=re.I)
-    deg = evaluate(degraded, man)
+    deg = evaluate(degraded, man, cart)
     s1_caught = not next(c for c in deg if c["id"] == "S1")["pass"]
     print("\n=== CRAFT NEGATIVE CONTROL (is the craft check non-vacuous?) ===")
     print(f"  baseline: HARD checks pass on the real skill        : {base_hard_ok}")

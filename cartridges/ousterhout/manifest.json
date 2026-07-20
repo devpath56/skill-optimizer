@@ -127,6 +127,25 @@
       "## Example",
       "Example Invocation",
       "**PM:**"
-    ]
+    ],
+    "grounding": {
+      "promises": [
+        "anecdote",
+        "from the book"
+      ],
+      "bundle": "skill/GROUNDING.md",
+      "authoritative_resource": "source/book.norm.txt",
+      "anecdote_probes": [
+        "unset",
+        "RAMCloud",
+        "temporal decomposition",
+        "information leakage"
+      ],
+      "fabricated_probes": [
+        "mars rover",
+        "netscape rewrite",
+        "10,000 line function"
+      ]
+    }
   }
 }
