@@ -1,0 +1,66 @@
+{
+  "_note": "Fair-use committed ground truth for the fidelity axis. The short quotes below are (c) John Ousterhout, 'A Philosophy of Software Design', quoted here under fair use (each < 15 words, attributed) as verification fixtures. The FULL book text is NOT included in this repo by design (copyright): supply your own licensed copy at source/book.norm.txt to run the deeper full-book F3 check. See README 'Fresh clone / new session'.",
+  "attribution": "John Ousterhout, A Philosophy of Software Design (2nd ed.)",
+  "checks": {
+    "F2_vocab": {
+      "kind": "deterministic-committed",
+      "runs_without_book": true,
+      "asserts": "all named_red_flags appear in the committed distillation (source/reference.verified.md)"
+    },
+    "F3_lightweight": {
+      "kind": "deterministic-committed",
+      "runs_without_book": true,
+      "asserts": "every confirmed_quote appears in the committed distillation (source/reference.verified.md); verifies the distillation the skill loads carries the grounded quotes"
+    },
+    "F3_full": {
+      "kind": "deterministic-gated-on-book",
+      "runs_without_book": false,
+      "requires": "source/book.norm.txt (external licensed copy, gitignored)",
+      "asserts": "every confirmed_quote is present verbatim in the book AND every fabricated_removed quote is absent from the book; absent book => RECORDED, never a live PASS"
+    }
+  },
+  "confirmed_quotes": [
+    { "quote": "This book is about one thing: complexity.", "words": 7 },
+    { "quote": "Dealing with complexity is the most important challenge in software design.", "words": 11 },
+    { "quote": "The best modules are those whose interfaces are much simpler than their implementations.", "words": 13 },
+    { "quote": "Good names have two properties: precision and consistency.", "words": 8 },
+    { "quote": "This is tactical programming pure and simple, with all of its disadvantages.", "words": 12 },
+    { "quote": "the units of development should be abstractions, not features", "words": 9 },
+    { "quote": "define errors out of existence", "words": 5 },
+    { "quote": "canary in the coal mine", "words": 5 },
+    { "quote": "Comment Repeats Code", "words": 3 }
+  ],
+  "fabricated_removed": [
+    "The most important skill for a software designer is the ability to recognize complexity",
+    "Good design is the accumulation of thousands of small decisions",
+    "If the interface of a module doesn't tell you what you need to know to use it, then the interface is wrong",
+    "You can't design your way out of bad code by adding comments",
+    "The whole point of comments is to capture things that can't be expressed in the code"
+  ],
+  "fabricated_note": "These passages were quotation-marked as verbatim in the earlier distillation but could NOT be confirmed in the book; they were removed (see FIDELITY-FINDINGS.md). The full-book F3 check asserts they are ABSENT from the book. They are NOT grepped against the distillation, because reference.verified.md self-documents them in its 'removed' note.",
+  "named_red_flags": [
+    "shallow module",
+    "information leakage",
+    "temporal decomposition",
+    "pass-through",
+    "conjoined methods",
+    "special-general mixture",
+    "vague names",
+    "overexposure"
+  ],
+  "principles_checklist": [
+    "Complexity is incremental",
+    "Continual small investments",
+    "Modules should be deep",
+    "Simple interface > simple implementation",
+    "General-purpose modules are deeper",
+    "Separate general- and special-purpose code",
+    "Different layer, different abstraction",
+    "Pull complexity downward",
+    "Define errors out of existence",
+    "Design it twice",
+    "Comments describe what's not obvious from code",
+    "Design for ease of reading, not writing",
+    "Increments = abstractions, not features"
+  ]
+}

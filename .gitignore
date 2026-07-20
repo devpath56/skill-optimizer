@@ -2,8 +2,10 @@
 cartridges/*/source/book*.txt
 cartridges/*/source/*.pdf
 cartridges/*/source/*.epub
-# Captured skill outputs are regenerable traces
-cartridges/*/golden/*-out-*.md
+# NOTE: captured skill outputs (*-out-*.md) are NOT ignored. They are the skill's OWN
+# critiques (not copyrighted) and are the golden ground truth for the efficacy axes
+# (E4 clean-restraint, E-ref off-domain). Committing them makes a fresh clone self-contained:
+# their absence is NEVER-EVALUATED, not a FAIL, so they must ship with the repo.
 
 # harness noise
 **/stop_hook_fired.log

@@ -22,8 +22,11 @@ cartridges/
 
 ## Run
 ```
-python3 engine/score.py cartridges/<name>     # → scorecard + SHIP/RED (deterministic axes)
+python3 engine/preflight.py cartridges/<name>  # → readiness: what runs clean vs what needs the book (run FIRST)
+python3 engine/score.py cartridges/<name>      # → scorecard + SHIP/RED/INCOMPLETE (deterministic axes)
 ```
+A fresh clone runs clean or fails loud: missing committed files → INCOMPLETE (exit 6);
+the book (external licensed dep) absent → full-book F3 NOT-RUN (loud), never a bare PASS.
 
 ## To ship a NEW skill (the generalization)
 1. Create `cartridges/<skill>/manifest.json` with:

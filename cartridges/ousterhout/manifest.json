@@ -69,7 +69,14 @@
       "state": "off-domain"
     }
   ],
+  "fidelity": {
+    "fixtures": "validation/fidelity-fixtures.json",
+    "distillation": "source/reference.verified.md",
+    "book_ground_truth": "source/book.norm.txt",
+    "note": "distillation + fixtures are COMMITTED (lightweight F2/F3 run clean without the book). book_ground_truth is an EXTERNAL licensed dependency, gitignored by design; its absence makes full-book F3 NOT-RUN (loud), never a PASS."
+  },
   "fidelity_status": {
+    "_recorded_note": "RECORDED result from a run where the book WAS present (author's machine). NOT a live verdict. score.py must presence-check the book before echoing this; if the book is absent it prints RECORDED (not verifiable in this clone), never a bare PASS.",
     "F2_vocab": "PASS 8/8",
     "F3_grounded": "PASS (fresh auditor, all 9 defects fixed)",
     "fixed_via": "iterate round 1"
