@@ -42,7 +42,7 @@ def load(cart):
 RETRIEVAL_QUERY = {
     "S5": "define errors out of existence",   # refusal/graceful-missing-input <- the book's own principle
     "S9": "deep module",                       # the recall mnemonic's anchor principle (DEEP)
-    "S11": "modules should be deep",           # authorial voice — anchor signature quote
+    "S11": "simpler than their implementations",  # authorial voice — a SHARP anchor, not a platitude
 }
 
 
@@ -134,14 +134,16 @@ def apply_fix(deficiency, retrieval, skill_text, man):
     if did == "S11":
         voice = man.get("craft", {}).get("voice", {})
         quotes = voice.get("signature_quotes", [])
-        # weave in signature quotes not already surfaced by the persona (each verbatim + fair-use)
+        # idempotent: strip any prior voice block (the raised bar replaces a generic one with sharp lines)
+        skill_text = re.sub(r"\n## Speak in the author's voice.*?(?=\n## |\Z)", "\n", skill_text, flags=re.S)
         pick = [q for q in quotes if q.lower() not in skill_text.lower()][:5]
         rows = "\n".join(f'- "{q}"' for q in pick)
         block = (
             "\n## Speak in the author's voice\n"
-            "A total expert quotes the master. Weave in Ousterhout's own words where they land — "
-            "these are verbatim, fair-use lines from *A Philosophy of Software Design*:\n"
-            f"{rows}\n\n(Each is grounded verbatim in the source; see `skill/GROUNDING.md`.)\n")
+            "A total expert quotes the master. Weave in Ousterhout's own SHARP lines where they land — "
+            "verbatim, fair-use, and interview-grade (a tradeoff or a coined mechanism, never a platitude), "
+            "from *A Philosophy of Software Design*:\n"
+            f"{rows}\n\n(Each is verbatim in the source; see `skill/GROUNDING.md`.)\n")
         anchor = "## Example Invocation"
         if anchor in skill_text:
             return skill_text.replace(anchor, block + "\n" + anchor, 1)

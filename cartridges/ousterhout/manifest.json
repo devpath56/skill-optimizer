@@ -176,16 +176,37 @@
     "voice": {
       "min_quotes": 3,
       "signature_quotes": [
+        "the best modules are those whose interfaces are much simpler than their implementations",
+        "the increments of software development should be abstractions, not features",
+        "pull complexity downward",
+        "define errors out of existence",
+        "different layer, different abstraction",
+        "the most important technique for achieving deep modules is information hiding",
+        "tactical tornado",
+        "classitis"
+      ],
+      "generic_blocklist": [
         "complexity is incremental",
         "modules should be deep",
-        "different layer, different abstraction",
-        "pull complexity downward",
-        "design it twice",
         "the greatest limitation in writing software is our ability to understand",
-        "the increments of software development should be abstractions, not features",
-        "the most important technique for achieving deep modules is information hiding"
+        "design it twice",
+        "this book is about one thing: complexity"
       ],
-      "note": "The author's signature/quotable lines. (c) John Ousterhout, 'A Philosophy of Software Design', quoted under fair use (each < 15 words, attributed). S12 verifies each is verbatim in the book so the skill's 'voice' is never fabricated; S11 checks the bundle carries >= min_quotes so a teaching agent can speak in the expert's voice."
+      "coined_mechanisms": [
+        "information leakage",
+        "temporal decomposition",
+        "define errors out of existence",
+        "pull complexity down",
+        "shallow module",
+        "pass-through",
+        "conjoined methods",
+        "special-general mixture",
+        "classitis",
+        "tactical tornado",
+        "information hiding",
+        "different layer, different abstraction"
+      ],
+      "note": "SHARP, interview-grade signature quotes only. A quote counts (S11) iff it is NOT a generic platitude (generic_blocklist) AND carries a tradeoff structure (regex in craft.py) OR a counterintuitive coined mechanism. S13 forbids declaring any platitude as a signature quote; S12 requires each verbatim in the book. All (c) Ousterhout, fair use (<15w), attributed."
     }
   },
   "retrieval": {

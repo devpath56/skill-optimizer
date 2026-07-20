@@ -45,6 +45,18 @@ import re
 import sys
 
 
+# A signature quote is "sharp" (interview-grade) only if it is not a generic platitude AND carries a
+# tradeoff/contrast structure OR a counterintuitive coined mechanism. Verbatim-but-generic ≠ signal.
+_TRADEOFF = re.compile(r"\b(more \w+ than|simpler than|deeper than|rather than|instead of|, not | not \w+ but| yet )")
+
+
+def _is_sharp(quote, coined, blocklist):
+    ql = quote.lower()
+    if ql in {b.lower() for b in blocklist}:
+        return False
+    return bool(_TRADEOFF.search(ql)) or any(c.lower() in ql for c in coined)
+
+
 def load_manifest(cart):
     return json.load(open(os.path.join(cart, "manifest.json"), encoding="utf-8"))
 
@@ -185,15 +197,27 @@ def evaluate(text, man, cart="."):
     quotes = voice.get("signature_quotes", [])
     if quotes:
         min_q = voice.get("min_quotes", 3)
-        # skill-FILE level (the ask): the skill's OWN persona must surface the author's signature lines,
-        # not merely have them reachable in the grounding bundle.
-        blob = text.lower()
-        carried = [q for q in quotes if q.lower() in blob]
-        add("S11", f"authorial voice is taught (the skill surfaces >= {min_q} signature quotes)", "advisory",
-            len(carried) >= min_q,
-            f"{len(carried)}/{len(quotes)} signature quotes in the skill (>= {min_q} needed)" if len(carried) >= min_q
-            else f"only {len(carried)}/{len(quotes)} signature quotes in the skill — the persona can't speak "
-                 f"in the author's voice (needs >= {min_q}; the rest sit in the grounding, not the persona)")
+        coined = voice.get("coined_mechanisms", [])
+        block = voice.get("generic_blocklist", [])
+        skill_low = text.lower()
+        # S11 (advisory, RAISED): the skill's persona surfaces >= min_q SHARP, interview-grade signature
+        # quotes. Verbatim-but-generic platitudes ("modules should be deep") do NOT count — they earn a
+        # polite nod, not points; only discriminating lines (tradeoff or coined mechanism) count.
+        surfaced = [q for q in quotes if q.lower() in skill_low and _is_sharp(q, coined, block)]
+        add("S11", f"authorial voice is taught (skill surfaces >= {min_q} SHARP, interview-grade quotes)",
+            "advisory", len(surfaced) >= min_q,
+            f"{len(surfaced)}/{len(quotes)} sharp signature quotes in the skill (>= {min_q})"
+            if len(surfaced) >= min_q else
+            f"only {len(surfaced)}/{len(quotes)} SHARP quotes in the skill — generic platitudes don't "
+            f"count toward the bar; the persona needs >= {min_q} discriminating lines to earn points")
+        # S13 (HARD): the bar itself must be sharp — no generic platitude may be DECLARED a signature
+        # quote (else the bar is padded with fortune-cookie lines that pass on count alone).
+        generic_declared = [q for q in quotes if not _is_sharp(q, coined, block)]
+        add("S13", "voice-bar integrity (no generic platitude is declared as a signature quote)", "hard",
+            not generic_declared,
+            "every declared signature quote is discriminating/interview-grade" if not generic_declared
+            else f"PLATITUDES declared as signature quotes — raise them: {generic_declared}")
+        # S12 (HARD, book-gated): each signature quote is verbatim in the source — never fabricated.
         book_rel = (craft.get("grounding") or {}).get("authoritative_resource", "")
         book_path = os.path.join(cart, book_rel) if book_rel else ""
         if book_rel and os.path.exists(book_path):

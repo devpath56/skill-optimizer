@@ -4,7 +4,7 @@
     {
       "round": 0,
       "picked": "S11",
-      "query": "modules should be deep",
+      "query": "simpler than their implementations",
       "retrieval": {
         "found": true,
         "source": "source/book.norm.txt",
