@@ -20,15 +20,42 @@
     }
   },
   "confirmed_quotes": [
-    { "quote": "This book is about one thing: complexity.", "words": 7 },
-    { "quote": "Dealing with complexity is the most important challenge in software design.", "words": 11 },
-    { "quote": "The best modules are those whose interfaces are much simpler than their implementations.", "words": 13 },
-    { "quote": "Good names have two properties: precision and consistency.", "words": 8 },
-    { "quote": "This is tactical programming pure and simple, with all of its disadvantages.", "words": 12 },
-    { "quote": "the units of development should be abstractions, not features", "words": 9 },
-    { "quote": "define errors out of existence", "words": 5 },
-    { "quote": "canary in the coal mine", "words": 5 },
-    { "quote": "Comment Repeats Code", "words": 3 }
+    {
+      "quote": "This book is about one thing: complexity.",
+      "words": 7
+    },
+    {
+      "quote": "Dealing with complexity is the most important challenge in software design.",
+      "words": 11
+    },
+    {
+      "quote": "The best modules are those whose interfaces are much simpler than their implementations.",
+      "words": 13
+    },
+    {
+      "quote": "Good names have two properties: precision and consistency.",
+      "words": 8
+    },
+    {
+      "quote": "This is tactical programming pure and simple, with all of its disadvantages.",
+      "words": 12
+    },
+    {
+      "quote": "the units of development should be abstractions, not features",
+      "words": 9
+    },
+    {
+      "quote": "define errors out of existence",
+      "words": 5
+    },
+    {
+      "quote": "canary in the coal mine",
+      "words": 5
+    },
+    {
+      "quote": "Comment Repeats Code",
+      "words": 3
+    }
   ],
   "fabricated_removed": [
     "The most important skill for a software designer is the ability to recognize complexity",
@@ -62,5 +89,17 @@
     "Comments describe what's not obvious from code",
     "Design for ease of reading, not writing",
     "Increments = abstractions, not features"
+  ],
+  "regression_guards": [
+    {
+      "phrase": "Unix is the design to copy here, Windows is the frustration to avoid",
+      "why": "C04 guard: reverting to pre-C04 text (unset framed as the positive example, no file-deletion lead example) removes this phrase",
+      "book_grounded": "Windows = 'a continual source of frustration for developers and users'; Unix defers the delete (book 10.4)"
+    },
+    {
+      "phrase": "Ousterhout's own mistake",
+      "why": "C04 guard: asserts Tcl unset is framed as the MISTAKE, not a positive define-errors example",
+      "book_grounded": "'one of the biggest mistakes I made in the design of Tcl' (book)"
+    }
   ]
 }

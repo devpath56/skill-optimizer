@@ -79,8 +79,27 @@ def t4_runtime(cart):
     if unhedged: detail.append(f"   (note) did not explicitly hedge on: {unhedged}")
     return ("PASS" if ok else "FAIL"), detail, True
 
+def reg_guards(cart):
+    """RG regression guard (deterministic): book-grounded phrases that MUST be present in the
+    distillation. Reverting a fidelity fix (e.g. C04: Tcl unset re-framed as a positive example)
+    removes them -> FAIL -> gate exits nonzero, so prove-durable flips the reference GREEN->RED on
+    revert. Its own negative control is the pre-fix text, which lacks these phrases (RAT probe)."""
+    fx = os.path.join(cart, "..", "validation", "fidelity-fixtures.json")
+    dist = os.path.join(cart, "..", "source", "reference.verified.md")
+    if not os.path.exists(fx) or not os.path.exists(dist):
+        return "NOT-RUN", ["RG: fixtures or distillation missing (repo-integrity)"], False
+    guards = json.load(open(fx)).get("regression_guards", [])
+    if not guards:
+        return "NOT-RUN", ["RG: no regression_guards in fixtures"], False
+    d = norm(open(dist).read())
+    missing = [g["phrase"] for g in guards if norm(g["phrase"]) not in d]
+    ok = not missing
+    detail = [f"RG regression guards: {'PASS' if ok else 'FAIL'} {len(guards)-len(missing)}/{len(guards)} book-grounded phrases present in distillation"]
+    if missing: detail.append(f"   MISSING (a fidelity fix was reverted): {missing}")
+    return ("PASS" if ok else "FAIL"), detail, True
+
 def main(cart):
-    dims = [("T1", t1_quote_fidelity), ("T2", t2_attributions), ("T4", t4_runtime)]
+    dims = [("RG", reg_guards), ("T1", t1_quote_fidelity), ("T2", t2_attributions), ("T4", t4_runtime)]
     print(f"\n=== TRUTHFULNESS GATE · {cart} ===\n")
     verdicts, blocked, notrun = {}, False, False
     for name, fn in dims:
