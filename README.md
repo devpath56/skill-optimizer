@@ -20,8 +20,12 @@ writing a new cartridge; the engine never changes.
   grounded judge that must quote the source.
 - **Craft** (the skill file itself) — does `SKILL.md`, *as written*, **codify the craft it applies**?
   Deterministic static checks — vocab, output contract, diagnostic framework, source grounding,
-  **grounding-travels (S7)** and **grounding-is-real vs the book (S8)** (HARD); refusal instruction,
-  worked example (advisory). Zero model cost, machine-readable for agents (`engine/craft.py --json`):
+  **grounding-travels (S7)**, **grounding-is-real vs the book (S8)**, **recall-mnemonic-grounded (S10)**
+  (HARD); refusal instruction, worked example, **recall-mnemonic-taught (S9)** (advisory). The mnemonic
+  dimension asks: can a teaching agent teach a memorable acronym for the key principles? — encoded as
+  DEEP (Deep modules · Errors out of existence · Ease of reading · Pull complexity down), each letter
+  verified verbatim in the book so the acronym is never fabricated. Zero model cost, machine-readable
+  for agents (`engine/craft.py --json`):
   hand an agent the scorecard instead of asking it to read the skill and fuzzily judge "is this
   well-crafted?"
 

@@ -41,6 +41,7 @@ def load(cart):
 # Each open deficiency names the authoritative material that would fix it. A green check needs no query.
 RETRIEVAL_QUERY = {
     "S5": "define errors out of existence",   # refusal/graceful-missing-input <- the book's own principle
+    "S9": "deep module",                       # the recall mnemonic's anchor principle (DEEP)
 }
 
 
@@ -112,6 +113,19 @@ def apply_fix(deficiency, retrieval, skill_text, man):
             "what is needed. (Grounded in the authoritative source; see `skill/GROUNDING.md`.)\n"
         )
         # append near the end, before the Example section if present
+        anchor = "## Example Invocation"
+        if anchor in skill_text:
+            return skill_text.replace(anchor, block + "\n" + anchor, 1)
+        return skill_text + block
+    if did == "S9":
+        mn = man.get("craft", {}).get("mnemonic", {})
+        exp = mn.get("expansion", [])
+        rows = "\n".join(f"- **{e['letter']} — {e['principle']}**" for e in exp)
+        block = (
+            f"\n## Memory hook — {mn.get('acronym')} (make the core principles stick)\n"
+            f"Teach this mnemonic so a learner recalls the key moves years later, EPIC-style:\n{rows}\n\n"
+            f"Every letter maps to a principle grounded in *A Philosophy of Software Design* "
+            f"(verified against the source; see `skill/GROUNDING.md`).\n")
         anchor = "## Example Invocation"
         if anchor in skill_text:
             return skill_text.replace(anchor, block + "\n" + anchor, 1)

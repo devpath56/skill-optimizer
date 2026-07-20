@@ -14,6 +14,17 @@
     },
     {
       "round": 1,
+      "picked": "S9",
+      "query": "deep module",
+      "retrieval": {
+        "found": true,
+        "source": "source/book.norm.txt",
+        "refused": []
+      },
+      "closed": true
+    },
+    {
+      "round": 2,
       "deficiencies": [],
       "converged": true
     }
