@@ -174,13 +174,16 @@ Microservices debates are often this question at the infrastructure level. Ask w
 ### Principle
 Exception handling is one of the worst sources of complexity. The best way to reduce it is to design APIs so the exceptions don't exist in the first place — "define errors out of existence."
 
-### The Book's Real Example: Tcl `unset`
-Ousterhout's own example (a mistake he says he made in Tcl): the `unset` command removes a variable. He defined it to throw an error if the variable didn't exist. But a common use of `unset` is cleanup, where you can't be sure the variable exists, so developers ended up wrapping `unset` calls in `catch` statements. The fix is to redefine `unset` so that it ensures the variable no longer exists — deleting an absent variable is then a no-op, not an error. There's no longer an error case to report.
+### Example 1: file deletion (the book's lead example)
+Windows refuses to delete a file that is open in a process, so callers hit an error and have to hunt down whatever holds the file open. Unix defines that error out of existence: deleting an open file returns success immediately. Unix removes the name from the directory and defers the real deletion until the file is closed. Same operation, no error case to handle. Unix is the design to copy here, Windows is the frustration to avoid.
 
-(The earlier draft attributed this to a Tcl `substring()` function; that is wrong. The book's error-elimination example is Tcl **`unset`** — removing a variable.)
+### Example 2: Java `substring`
+Java's `substring` throws `IndexOutOfBoundsException` when an index is out of range, which complicates callers who legitimately want a clamped result. Redefining it to return the in-range (overlapping) characters instead of throwing defines the exception out of existence.
 
-### Related Example: Java substring
-Java's `substring` throws `IndexOutOfBoundsException` when an index is out of range, which complicates callers who legitimately want a clamped result. Redefining the method to return the in-range characters (clamping instead of throwing) defines the exception out of existence.
+### Example 3: Tcl `unset`, Ousterhout's own mistake
+He flags this as a mistake he made himself. He defined Tcl's `unset` (which removes a variable) to throw an error if the variable did not exist. But a common use of `unset` is cleanup, where you cannot be sure the variable exists, so developers ended up wrapping `unset` in `catch`. The fix: redefine `unset` so deleting an absent variable is a no-op, not an error.
+
+(Correction note: an earlier draft mis-framed `unset` as a positive example and once attributed the substring case to Tcl. Corrected here, `unset` is the *mistake*, the `substring` example is *Java's*, and the clean positive design is Unix file deletion. Caught by the truthfulness gate, logged C04.)
 
 ### Design Special Cases Out of Existence
 The same reasoning applies beyond errors: eliminating special cases removes the `if` statements that riddle code and create bugs.
