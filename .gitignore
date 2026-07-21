@@ -11,3 +11,7 @@ cartridges/*/source/*.epub
 **/stop_hook_fired.log
 .claude/
 cartridges/*/source/book.index.jsonl
+
+# human-in-loop checkpoint ledgers (run artifacts, written by the Trident observability layer)
+runs/
+cartridges/*/runs/
