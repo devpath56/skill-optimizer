@@ -22,7 +22,7 @@ import re
 import sys
 
 PAGE = re.compile(r"=====\s*PAGE\s+(\d+)\s*=====")
-CHAP = re.compile(r"Chapter\s+(\d+)\s+([A-Z][A-Za-z][\w\s\-\(\)’'&]{2,48}?)(?=\s+\d|\s+[A-Z][a-z]+\s+[a-z])")
+CHAP = re.compile(r"Chapter\s+(\d+)\s+([A-Z][A-Za-z][\w\s\-\(\)’',.&]{2,48}?)(?=\s+\d|\s+[A-Z][a-z]+\s+[a-z])")
 
 
 def ingest(text):
@@ -65,7 +65,8 @@ def main(cart):
         print("ingest: source absent (source/book.norm.txt) — supply the licensed book text first (see README).")
         sys.exit(6)
     content = [c for c in chunks if not c["frontmatter"]]
-    print(f"ingest: {len(chunks)} page-chunks -> {os.path.relpath(out, cart)}  "
+    out = os.path.join("source", "book.index.jsonl")
+    print(f"ingest: {len(chunks)} page-chunks -> {out}  "
           f"({len(chunks) - len(content)} front-matter/TOC pre-filtered, {len(content)} content)")
     sys.exit(0)
 

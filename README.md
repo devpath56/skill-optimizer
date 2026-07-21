@@ -148,8 +148,23 @@ python3 engine/gate_durability.py cartridges/ousterhout # SELF-DURABILITY: --sel
 python3 engine/craft.py     cartridges/ousterhout        # CRAFT axis: does SKILL.md codify the craft? (table)
 python3 engine/craft.py     cartridges/ousterhout --json # machine-readable craft scorecard (for agents)
 python3 engine/ingest.py    cartridges/ousterhout        # INGEST: build the cited chunk index (retrievability)
+python3 engine/rag_eval.py  cartridges/ousterhout        # RAGAS-style retrieval bar (precision/recall/faithfulness)
 python3 engine/loop.py      cartridges/ousterhout        # PROGRESSIVE DRIVER: run the actual optimize loop
 ```
+
+## Retrieval acceptance bar (RAGAS-style) · `engine/rag_eval.py`
+The loop retrieves from an ingested source; this measures whether that retrieval is any good — the
+"acceptance = behavior" bar for the RAG substrate — with the three standard RAGAS metrics computed
+**deterministically** (no LLM judge), against the cited index + committed answer keys:
+- **Context Precision** — does `retrieve(query)` land in the concept's *home chapter* (per the book's
+  TOC), not an incidental mention? (It caught a real ingest bug on first run — a chapter mislabeled
+  because the title had a comma.)
+- **Context Recall** — does the grounding bundle carry the source's key case-studies (the answer key)?
+- **Faithfulness** — is every checkable claim verbatim in the source (no fabrication)?
+
+Precision/faithfulness are book-gated (NOT-RUN + loud when the licensed source is absent); recall runs
+on committed data. This adopts an external, authoritative standard for the retrieval axis instead of a
+metric I invented.
 
 ## Source ingestion (retrievability) · `engine/ingest.py`
 Once a source is supplied (PDF → `book.norm.txt`), a second step makes it **retrievable**: `ingest.py`
