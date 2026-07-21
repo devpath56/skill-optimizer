@@ -8,6 +8,10 @@ it, cites its own principles and the book's real anecdotes, and hands you a cont
 - **The total workflow** — the rail at top: `source → progressive scoring checks → verified artifacts → advisor`.
 - **The aha moments** — four stuck decisions (feature-flag endpoints, error handling, comments, ship-now),
   each answered with a contrarian reframe grounded in a real principle + anecdote + quote.
+- **The contrarian delta** — each problem shows the *consensus* (what a stock model says from its
+  training) next to the advisor's reframe. The advisor's worth is the **delta from consensus**, not its
+  confidence. The valuable quadrant is *grounded AND contrarian* (a stock-LLM baseline + a calibrated
+  divergence judge is the metric; the demo shows the delta directly).
 - **The grounding payoff** — every citation carries a `✓ verbatim · APOSD, Ch N` badge. The aha is that
   the contrarian take is *also grounded*, never invented — because the artifacts it cites
   (DEEP dossier, `tradeoff_decisions`, signature quotes) were verbatim-verified upstream by the gate.
