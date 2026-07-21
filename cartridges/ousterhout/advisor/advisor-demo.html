@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Ousterhout Advisor · grounded contrarian design guru</title>
+<style>
+  :root{
+    --bg:#12131a; --panel:#1a1c26; --panel-2:#20222e; --line:#2c2f3d;
+    --ink:#eceef5; --muted:#c3c7d6; --faint:#9ea3b8;
+    --accent:#e6a942; --accent-ink:#1a1206; --good:#7ad3a4; --contra:#e06a4a;
+    --serif:ui-serif,Georgia,"Times New Roman",serif;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  :root[data-theme="light"]{
+    --bg:#f6f5f1; --panel:#fffefb; --panel-2:#f1efe8; --line:#e0ddd2;
+    --ink:#20222b; --muted:#454959; --faint:#5c6173;
+    --accent:#a4701a; --accent-ink:#fff; --good:#22684a; --contra:#b1442a;
+  }
+  *{box-sizing:border-box}
+  html:focus-within{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased;font-size:16px}
+  .wrap{max-width:1060px;margin:0 auto;padding:clamp(20px,4vw,44px)}
+  a{color:var(--accent)}
+  .theme-toggle{position:fixed;top:14px;right:14px;z-index:10;background:var(--panel);
+    border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:7px 11px;
+    font:inherit;font-size:13px;cursor:pointer}
+  .theme-toggle:hover{color:var(--ink);border-color:var(--accent)}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);
+    font-weight:600;margin:0 0 10px}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,5vw,44px);line-height:1.08;
+    letter-spacing:-.01em;margin:0 0 12px;text-wrap:balance}
+  .lede{color:var(--muted);font-size:clamp(16px,2.2vw,19px);max-width:60ch;margin:0 0 8px}
+  .rule{height:1px;background:var(--line);border:0;margin:32px 0}
+
+  /* workflow rail */
+  h2.sec{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);
+    font-weight:700;margin:0 0 14px}
+  .rail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media(max-width:720px){.rail{grid-template-columns:1fr 1fr}}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px}
+  .step .n{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700}
+  .step h3{font-size:15px;margin:6px 0 4px;font-weight:650}
+  .step p{margin:0;font-size:13px;color:var(--muted)}
+  .step .out{margin-top:9px;font-size:12px;color:var(--faint);font-family:var(--mono)}
+  .payoff{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .payoff .n{color:var(--accent)}
+
+  /* console */
+  .console{display:grid;grid-template-columns:270px 1fr;gap:0;border:1px solid var(--line);
+    border-radius:16px;overflow:hidden;background:var(--panel)}
+  @media(max-width:760px){.console{grid-template-columns:1fr}}
+  .picker{background:var(--panel-2);border-right:1px solid var(--line);padding:10px}
+  @media(max-width:760px){.picker{border-right:0;border-bottom:1px solid var(--line);
+    display:flex;gap:8px;overflow-x:auto}}
+  .picker .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+    font-weight:700;padding:8px 10px 10px}
+  .prob{display:block;width:100%;text-align:left;background:transparent;border:1px solid transparent;
+    color:var(--muted);border-radius:9px;padding:11px 12px;font:inherit;font-size:13.5px;cursor:pointer;
+    margin-bottom:3px;white-space:normal}
+  @media(max-width:760px){.prob{white-space:nowrap}}
+  .prob:hover{background:var(--panel);color:var(--ink)}
+  .prob[aria-selected="true"]{background:var(--panel);color:var(--ink);border-color:var(--accent);font-weight:600}
+  .prob .who{display:block;font-size:11px;color:var(--faint);font-weight:600;margin-bottom:2px}
+
+  .stage{padding:clamp(18px,3vw,30px);min-height:440px}
+  .quote-you{color:var(--muted);font-style:italic;border-left:2px solid var(--line);
+    padding:2px 0 2px 14px;margin:0 0 22px;font-size:15px}
+  .verdict{display:inline-flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--contra) 20%,var(--bg));
+    color:var(--ink);border:1px solid color-mix(in srgb,var(--contra) 55%,var(--bg));
+    border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:700;letter-spacing:.02em;margin-bottom:16px}
+  .take{font-family:var(--serif);font-size:clamp(19px,2.8vw,25px);line-height:1.3;
+    font-weight:500;margin:0 0 20px;text-wrap:balance}
+  .take b{color:var(--accent);font-weight:700}
+
+  .cites{display:grid;gap:10px;margin:0 0 22px}
+  .cite{background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:13px 14px}
+  .cite .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:5px}
+  .cite .v{font-size:14px}
+  .cite .anecdote{color:var(--ink)}
+  .cite blockquote{margin:8px 0 0;font-family:var(--serif);font-style:italic;color:var(--ink);
+    border-left:2px solid var(--accent);padding-left:12px;font-size:14.5px}
+  .badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:11.5px;font-weight:700;
+    color:var(--good);font-family:var(--mono)}
+  .badge::before{content:"✓";font-weight:900}
+
+  .reframe{background:color-mix(in srgb,var(--accent) 10%,transparent);
+    border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:12px;padding:15px 16px}
+  .reframe .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:6px}
+  .reframe p{margin:0;font-size:15px}
+  .ask{margin-top:12px;font-size:14px;color:var(--muted)}
+  .ask b{color:var(--ink)}
+
+  .foot{color:var(--faint);font-size:13px;margin-top:14px}
+  .foot code{font-family:var(--mono);color:var(--muted);font-size:12px}
+  table.grd{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+  table.grd td{border-top:1px solid var(--line);padding:7px 4px;color:var(--muted)}
+  table.grd td:first-child{color:var(--ink);font-weight:600;width:42%}
+  table.grd .ok{color:var(--good);font-family:var(--mono);font-size:12px}
+</style>
+</head>
+<body>
+<button class="theme-toggle" id="tt" aria-label="Toggle light and dark theme">◑ theme</button>
+<div class="wrap">
+
+  <p class="eyebrow">Prototype · the advisor is the pipeline's payoff</p>
+  <h1>The Ousterhout Advisor</h1>
+  <p class="lede">A highly opinionated software-design guru you invoke when you're stuck. It doesn't
+  validate your plan · it <em>reframes</em> it, cites its own principles and the book's real anecdotes,
+  and hands you a radically different way to see the problem.</p>
+  <p class="lede" style="color:var(--faint);font-size:15px">Every citation below is
+  <strong style="color:var(--good)">verbatim-verified against <em>A Philosophy of Software Design</em></strong>
+  by the pipeline that built this advisor · the aha is that the contrarian take is also <em>grounded</em>, never invented.</p>
+
+  <hr class="rule">
+
+  <h2 class="sec">The total workflow · how this advisor was built</h2>
+  <div class="rail">
+    <div class="step"><span class="n">01 · SOURCE</span><h3>The book</h3>
+      <p>The authoritative source, ingested into a cited chunk index.</p><div class="out">book.index.jsonl · 188 chunks</div></div>
+    <div class="step"><span class="n">02 · CHECKS</span><h3>Progressive scoring loops</h3>
+      <p>15 craft checks + RAGAS retrieval bar + a calibrated judge, each a deterministic gate.</p><div class="out">craft · rag_eval · gate</div></div>
+    <div class="step"><span class="n">03 · GROUND</span><h3>Verified artifacts</h3>
+      <p>DEEP dossier, trade-off decisions, signature quotes · each verbatim in the source.</p><div class="out">dossier · tradeoff_decisions</div></div>
+    <div class="step payoff"><span class="n">04 · ADVISOR</span><h3>This guru</h3>
+      <p>Invoke it on any stuck decision. It cites only what was verified upstream.</p><div class="out">grounded · contrarian</div></div>
+  </div>
+
+  <hr class="rule">
+
+  <h2 class="sec">Bring it a stuck decision · watch the reframe</h2>
+  <div class="console">
+    <div class="picker" role="tablist" aria-label="Stuck decisions">
+      <span class="lbl">The problem you bring</span>
+      <button class="prob" role="tab" aria-selected="true" data-k="flags"><span class="who">PM</span>Should each feature flag get its own endpoint?</button>
+      <button class="prob" role="tab" aria-selected="false" data-k="errors"><span class="who">Eng lead</span>Our API errors when you delete something already gone. Add better error handling?</button>
+      <button class="prob" role="tab" aria-selected="false" data-k="comments"><span class="who">Reviewer</span>They want more comments. But good code is self-documenting, right?</button>
+      <button class="prob" role="tab" aria-selected="false" data-k="tactical"><span class="who">PM</span>It's complex but it works. Ship now, refactor later?</button>
+    </div>
+    <div class="stage" id="stage" role="tabpanel" aria-live="polite"></div>
+  </div>
+  <p class="foot">Staged demo: responses are pre-composed from the pipeline's real grounded artifacts (not a live model call),
+  so the aha moments and the citations are reproducible. Live invocation retrieves the same verified chunks at runtime.</p>
+
+</div>
+
+<script>
+const DATA = {
+  flags:{
+    you:"“We're building a feature-flag service. Each feature gets its own endpoint: GET /flag/dark-mode, GET /flag/new-checkout…”",
+    verdict:"Shallow module",
+    take:"You're optimizing the <b>wrong axis</b>. Each endpoint has near-zero logic behind a whole interface. You've maximized interface-per-unit-of-value, which is exactly backwards.",
+    principle:"D · Deep modules", pk:"a simple interface over a powerful implementation",
+    anecdote:"Unix file I/O: five calls · open, read, write, lseek, close · hide enormous machinery (buffering, disk layout, permissions). A deep module.",
+    quote:"the best modules are those whose interfaces are much simpler than their implementations",
+    cite:"APOSD, Ch 4 · Modules Should Be Deep",
+    reframe:"One endpoint returns <em>all</em> flags for a user; the server decides which apply. One deep module instead of N shallow ones.",
+    ask:"What does the client actually need to know? Reduce <b>that</b> · before anyone writes the API contract."
+  },
+  errors:{
+    you:"“Deleting a record that's already gone throws an error and callers have to catch it. Let's add better error handling.”",
+    verdict:"Don't handle it · define it out of existence",
+    take:"More error handling is <b>more</b> complexity, not less. The move is to make the error case <b>impossible</b>, not survivable.",
+    principle:"E · Errors defined out of existence", pk:"redesign so the error case can't arise",
+    anecdote:"Ousterhout's own mistake: Tcl's <code>unset</code> threw if the variable was gone, so everyone wrapped it in <code>catch</code>. The fix made it a no-op. Unix does the same · deleting an open file just succeeds, deferring the real delete.",
+    quote:"define errors out of existence",
+    cite:"APOSD, Ch 10 · Define Errors Out Of Existence",
+    reframe:"Redefine the operation so “already gone” <em>is</em> success. Delete becomes idempotent; the error path disappears.",
+    ask:"Which of your exceptions could be designed away entirely, instead of caught in twelve places?"
+  },
+  comments:{
+    you:"“The reviewers keep asking for more comments. But if the code were good it'd be self-documenting · right?”",
+    verdict:"The seductive wrong answer",
+    take:"“Self-documenting code” is a half-truth used to avoid writing. Code can't express what it doesn't contain · the <b>why</b>, and the decisions that live between modules.",
+    principle:"E · Ease of reading over ease of writing", pk:"code and comments serve the reader",
+    anecdote:"Cross-module design decisions have no single home in any one class · encapsulation fights discoverability. Ousterhout's answer: a central <code>designNotes</code> file the modules point back to. The real red flag isn't comments, it's “Comment Repeats Code.”",
+    quote:"comments should describe things that aren't obvious from the code",
+    cite:"APOSD, Ch 13 · Comments Should Describe Things That Aren't Obvious",
+    reframe:"Comment the <em>non-obvious</em>: intent, invariants, cross-module dependencies. Put the cross-cutting ones in one <code>designNotes</code> file.",
+    ask:"For this module · what does a new reader need that the code physically cannot tell them?"
+  },
+  tactical:{
+    you:"“It's gnarly but it passes tests. Let's ship and clean it up next quarter.”",
+    verdict:"Tactical tornado",
+    take:"“It works” is a <b>loan at compound interest</b>. Complexity is incremental · this one shortcut is fine; the pattern of shortcuts is how systems die.",
+    principle:"P · Pull complexity downward", pk:"absorb it into the module, not its users",
+    anecdote:"The “tactical tornado” ships features fast and leaves the complexity for everyone downstream to clean up · and gets promoted for velocity while others pay the interest.",
+    quote:"pull complexity downward",
+    cite:"APOSD, Ch 3 · Working Code Isn't Enough",
+    reframe:"Spend the ~10–20% now: <em>design it twice</em>, and pull the complexity into this module so its callers never see it.",
+    ask:"What will this shortcut cost the next five people who touch it · and are you the one who'll pay?"
+  }
+};
+const stage=document.getElementById('stage');
+function render(k){
+  const d=DATA[k];
+  stage.innerHTML=`
+    <p class="quote-you">${d.you}</p>
+    <span class="verdict">⚡ ${d.verdict}</span>
+    <p class="take">${d.take}</p>
+    <div class="cites">
+      <div class="cite"><div class="k">Principle it stands on</div>
+        <div class="v"><strong>${d.principle}</strong> · ${d.pk}</div></div>
+      <div class="cite"><div class="k">The book's own anecdote</div>
+        <div class="v anecdote">${d.anecdote}</div>
+        <blockquote>“${d.quote}”</blockquote>
+        <span class="badge">verbatim · ${d.cite}</span></div>
+    </div>
+    <div class="reframe"><div class="k">↻ The reframe</div>
+      <p>${d.reframe}</p>
+      <p class="ask">Then it hands you the question: <b>${d.ask}</b></p></div>`;
+}
+document.querySelectorAll('.prob').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.prob').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true'); render(b.dataset.k);
+  });
+});
+render('flags');
+const tt=document.getElementById('tt'), root=document.documentElement;
+tt.addEventListener('click',()=>root.setAttribute('data-theme',
+  root.getAttribute('data-theme')==='dark'?'light':'dark'));
+</script>
+</body>
+</html>
