@@ -14,13 +14,20 @@ fallback would use WebFetch restricted to the allowlist.
 Nothing touches the live vendored skill. Each round STAGES an improved candidate under
 staging/loop/SKILL.md and writes a round-by-round staging/loop/loop-report.json.
 
-  python3 engine/loop.py cartridges/<name> [--max-rounds N]
+  python3 engine/loop.py cartridges/<name> [--max-rounds N] [--step]
 
-Exit: 0 converged (bar met) · 1 max rounds hit with deficiencies remaining · 6 skill_file not vendored.
+Human-in-loop observability: each round emits a resumable CHECKPOINT via the Trident layer
+(prongs/checkpoint.mjs — LangGraph HITL / OTel GenAI / Anthropic trustworthy-agents; Trident PD-020)
+to <cart>/runs/<name>/checkpoints.jsonl. --step PAUSES after each round (interrupt) so the human can
+approve/edit/reject before it proceeds; a deficiency with no deterministic handler interrupts to ASK.
+
+Exit: 0 converged (bar met) · 1 max rounds hit with deficiencies remaining · 3 interrupted (awaiting
+human disposition via `checkpoint.mjs resume`) · 6 skill_file not vendored.
 """
 import json
 import os
 import re
+import subprocess
 import sys
 
 ENG = os.path.dirname(os.path.abspath(__file__))
@@ -176,7 +183,44 @@ def apply_fix(deficiency, retrieval, skill_text, man):
     return skill_text  # no deterministic handler -> unchanged (would route to a model iterate step)
 
 
-def main(cart, max_rounds=3):
+# ── human-in-loop observability: emit a checkpoint per round via the Trident layer ───────────────
+# Trident OWNS the checkpoint code (prongs/checkpoint.mjs); the optimizer OWNS its run DATA (--dir=cart).
+# Conforms to LangGraph HITL / OTel GenAI / Anthropic trustworthy-agents (see Trident PD-020).
+def _trident_home():
+    """Locate Trident without hardcoding a personal path: $TRIDENT_HOME, then a sibling repo."""
+    cands = []
+    if os.environ.get("TRIDENT_HOME"):
+        cands.append(os.environ["TRIDENT_HOME"])
+    repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # skill-optimizer/
+    cands.append(os.path.join(repo, "..", "Trident-setup"))
+    for c in cands:
+        if c and os.path.exists(os.path.join(c, "prongs", "checkpoint.mjs")):
+            return os.path.abspath(c)
+    return None
+
+
+def _checkpoint(trident, base, run, itr, **kw):
+    """Shell out to the Trident checkpoint tool. Returns exit code (3 == interrupted/pause). No-op if absent."""
+    if not trident:
+        return None
+    argv = ["node", os.path.join(trident, "prongs", "checkpoint.mjs"), "write",
+            "--run", run, "--dir", base, "--iter", str(itr)]
+    for k, v in kw.items():
+        if v is None or v is False:
+            continue
+        if v is True:
+            argv.append(f"--{k}")
+        else:
+            argv += [f"--{k}", str(v)]
+    r = subprocess.run(argv, capture_output=True, text=True)
+    if r.stdout:
+        print(r.stdout.rstrip())
+    if r.returncode not in (0, 3) and r.stderr:
+        print(f"    [checkpoint] {r.stderr.strip()}")
+    return r.returncode
+
+
+def main(cart, max_rounds=3, step=False):
     man, skill_path = load(cart)
     skill_text = open(skill_path, encoding="utf-8").read()
     stage_dir = os.path.join(cart, "staging", "loop")
@@ -188,8 +232,16 @@ def main(cart, max_rounds=3):
         print("[ingest] source made retrievable -> source/book.index.jsonl (cited chunks)\n")
 
     report = {"cartridge": os.path.basename(cart.rstrip("/")), "rounds": []}
+    trident = _trident_home()
+    run = report["cartridge"]
     print(f"\n=== PROGRESSIVE DRIVER · {report['cartridge']} ===")
-    print("    eval -> deficiency -> retrieve(authoritative, gated) -> fix -> re-eval\n")
+    print("    eval -> deficiency -> retrieve(authoritative, gated) -> fix -> re-eval")
+    if trident:
+        print(f"    observability: checkpoint per round -> {run}/runs/{run}/checkpoints.jsonl"
+              f"{'  ·  --step: pause for approve/edit/reject each round' if step else ''}")
+    else:
+        print("    observability: Trident not found ($TRIDENT_HOME / sibling) — running unobserved")
+    print()
 
     rnd = 0
     while rnd < max_rounds:
@@ -197,14 +249,20 @@ def main(cart, max_rounds=3):
         if not defs:
             print(f"[round {rnd}] no open deficiencies — BAR MET, converged.")
             report["rounds"].append({"round": rnd, "deficiencies": [], "converged": True})
+            _checkpoint(trident, cart, run, rnd, op="eval", converged=True, max=max_rounds,
+                        reason="bar met — no open deficiencies")
             break
         d = defs[0]
         log = []
         print(f"[round {rnd}] deficiency: {d['id']} ({d['kind']}) — {d['name']}")
         if not d.get("query"):
-            print(f"           no retrieval route for {d['id']} (would go to a model iterate step); stopping.")
+            # ask-when-uncertain (Anthropic): no deterministic handler -> interrupt for the human, never a silent guess.
+            print(f"           no retrieval route for {d['id']} — generative fix needed; ASK the human (interrupt).")
             report["rounds"].append({"round": rnd, "picked": d["id"], "note": "no retrieval route"})
-            break
+            _checkpoint(trident, cart, run, rnd, op="invoke_agent", deficiency=f"{d['id']} {d['name']}",
+                        fix="needs a generative (model-iterate) fix — no deterministic handler", max=max_rounds,
+                        pause=True)
+            return 3 if trident else 1
         r = retrieve(d["query"], man, cart, log)
         for line in log:
             print(line)
@@ -220,8 +278,19 @@ def main(cart, max_rounds=3):
                                  "retrieval": {"found": r["found"], "source": r["source"],
                                                "refused": r["refused"]},
                                  "closed": closed})
+        # checkpoint this round (transparency: the plan, the retrieval, the delta vs bar). --step => pause.
+        rc = _checkpoint(trident, cart, run, rnd, op="execute_tool",
+                         deficiency=f"{d['id']} {d['name']}", query=d["query"],
+                         source=r["source"], cite=(r["passage"][:80] if r["found"] else None),
+                         fix=f"inject grounded {d['id']} block", metric=d["id"],
+                         before=str(before.get(d["id"])), after=str(after.get(d["id"])),
+                         bar="pass", max=max_rounds, pause=step)
         if not closed:
             print(f"    {d['id']} did not close deterministically — routing to model iterate step (out of scope here).")
+            break
+        if step and rc == 3:
+            # interrupted: the human disposes via `checkpoint.mjs resume` before the loop proceeds.
+            print(f"    ⏸ paused after round {rnd} — dispose via the Trident tool, then re-run to continue.")
             break
         rnd += 1
 
@@ -243,4 +312,4 @@ if __name__ == "__main__":
     mr = 3
     if "--max-rounds" in args:
         mr = int(args[args.index("--max-rounds") + 1])
-    sys.exit(main(args[0], mr))
+    sys.exit(main(args[0], mr, step="--step" in args))
