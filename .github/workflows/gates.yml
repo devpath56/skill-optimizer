@@ -53,3 +53,9 @@ jobs:
 
       - name: RAG eval (RAGAS-style deterministic retrieval bar)
         run: python3 engine/rag_eval.py cartridges/ousterhout
+
+      - name: skill lint (foundation: frontmatter/name/description discoverability)
+        run: python3 engine/skill_lint.py cartridges/ousterhout
+
+      - name: skill lint negative control
+        run: python3 engine/skill_lint.py cartridges/ousterhout --selftest
