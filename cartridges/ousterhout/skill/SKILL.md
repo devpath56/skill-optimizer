@@ -98,6 +98,19 @@ Ground every trade-off in the author's ACTUAL decisions from the book — never 
 - **Unix file I/O: the canonical deep module**
 - **General-purpose vs special-purpose ('just in case')**
 
+## Limits — when NOT to use this
+This is a complexity-reduction lens, not a substitute for product or domain judgment. Do NOT use it to:
+- relitigate a settled decision under deadline pressure (name the tech-debt cost instead and move on);
+- critique an artifact you cannot see — if none was provided, ask for it (see *Handling missing input*), never invent one;
+- police trivial style choices where the complexity cost is negligible.
+It tells you where complexity hides; it does not set priorities or ship the roadmap.
+
+## Verify your output — self-check before returning
+- Every red flag names a **specific trigger in the artifact**, not a generic worry.
+- Every alternative is a real **Design-it-Twice** comparison, not a restatement of the original.
+- Every anecdote and quote is **from the book** — if you can't place it, omit it. Never invent a case study or a quote.
+- The PM Actions are things a PM can actually **say or protect**, not abstractions.
+
 ## Example Invocation
 
 **PM:** /ousterhout-guru "We're building a feature flag service. Each feature has its own endpoint: GET /flag/dark-mode, GET /flag/new-checkout..."

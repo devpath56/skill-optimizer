@@ -263,6 +263,11 @@
         "name": "General-purpose vs special-purpose ('just in case')",
         "book_probe": "general-purpose",
         "grounding_probe": "general-purpose"
+      },
+      {
+        "name": "Cross-module design decisions: no single home for cross-cutting knowledge -> a central designNotes file",
+        "book_probe": "cross-module design decisions",
+        "grounding_probe": "cross-module"
       }
     ],
     "tradeoff_note": "Recall over the source's trade-off case studies. S14 = the bundle carries >= threshold of them (teachable, not omitted/invented); S15 = each is verbatim in the book (the answer key is real, not padded). book_probe verifies against the source; grounding_probe detects coverage in the skill+grounding bundle."
