@@ -273,5 +273,53 @@
     ],
     "refuse_nonallowlisted": true,
     "note": "The loop retrieves from the authoritative SOURCE (book) first. Only if the source lacks the material does it consult the allowlist (authoritative sites). Any non-allowlisted source is REFUSED, never silently fetched. Deterministic-first; a live fallback would use WebFetch restricted to the allowlist."
+  },
+  "rag_eval": {
+    "precision_min": 0.8,
+    "recall_min": 0.9,
+    "faithfulness_min": 1.0,
+    "precision_gold": [
+      {
+        "query": "deep module",
+        "chapter": 4
+      },
+      {
+        "query": "information leakage",
+        "chapter": 5
+      },
+      {
+        "query": "temporal decomposition",
+        "chapter": 5
+      },
+      {
+        "query": "define errors out of existence",
+        "chapter": 10
+      },
+      {
+        "query": "different layer",
+        "chapter": 7
+      },
+      {
+        "query": "comments should",
+        "chapter": 13
+      },
+      {
+        "query": "design it twice",
+        "chapter": 11
+      },
+      {
+        "query": "pull complexity",
+        "chapter": 8
+      },
+      {
+        "query": "general-purpose",
+        "chapter": 6
+      },
+      {
+        "query": "choosing names",
+        "chapter": 14
+      }
+    ],
+    "note": "RAGAS-style deterministic retrieval eval. precision_gold maps a query to its HOME chapter (from the book's TOC) so context_precision measures whether retrieval lands there vs an incidental mention. Recall reuses craft.tradeoff_decisions; faithfulness reuses voice.signature_quotes + grounding.anecdote_probes. Precision/faithfulness are book-gated (NOT-RUN when the licensed source is absent)."
   }
 }

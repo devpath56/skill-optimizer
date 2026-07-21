@@ -50,3 +50,6 @@ jobs:
 
       - name: judge calibration (TPR/TNR >= 0.85)
         run: python3 cartridges/ousterhout/validation/calibrate.py
+
+      - name: RAG eval (RAGAS-style deterministic retrieval bar)
+        run: python3 engine/rag_eval.py cartridges/ousterhout
