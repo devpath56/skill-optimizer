@@ -26,6 +26,7 @@ import sys
 ENG = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ENG)
 import craft  # reuse the deterministic craft grader (evaluate)
+import frameworks  # S18/S19 — the book's figures as deployable framework cards (loop drives S18)
 import ingest  # ingestion step: make a source retrievable (build the cited chunk index)
 
 
@@ -45,6 +46,7 @@ RETRIEVAL_QUERY = {
     "S9": "deep module",                       # the recall mnemonic's anchor principle (DEEP)
     "S11": "simpler than their implementations",  # authorial voice — a SHARP anchor, not a platitude
     "S14": "exception masking",                    # trade-off case studies — anchor a missing decision
+    "S18": "deep and shallow modules",             # frameworks-as-tools — anchor the deep/shallow figure
 }
 
 
@@ -52,7 +54,7 @@ def deficiencies(skill_text, man, cart):
     """Run the deterministic grader on the current skill; return open deficiencies (advisory + hard),
     each tagged with the authoritative retrieval query that would resolve it."""
     out = []
-    for c in craft.evaluate(skill_text, man, cart):
+    for c in list(craft.evaluate(skill_text, man, cart)) + list(frameworks.evaluate(skill_text, man, cart)):
         if c.get("notrun") or c["pass"]:
             continue
         out.append({"id": c["id"], "name": c["name"], "kind": c["kind"],
@@ -110,7 +112,7 @@ def retrieve(query, man, cart, log):
 
 
 # ── deficiency-specific fixes (grounded in the retrieval) ───────────────────────
-def apply_fix(deficiency, retrieval, skill_text, man):
+def apply_fix(deficiency, retrieval, skill_text, man, cart="."):
     """Return improved skill_text with a fix GROUNDED in the retrieved authoritative material.
     Deterministic + honest: the added instruction cites the real retrieved principle; no fabrication."""
     did = deficiency["id"]
@@ -173,6 +175,26 @@ def apply_fix(deficiency, retrieval, skill_text, man):
         if anchor in skill_text:
             return skill_text.replace(anchor, block + "\n" + anchor, 1)
         return skill_text + block
+    if did == "S18":
+        cards = frameworks.load_cards(cart, man) or []
+        # cited cards first (real book figures outrank derived); each carries its figure + reframe
+        cards = sorted(cards, key=lambda c: 0 if c.get("provenance", {}).get("kind") == "cited" else 1)
+        rows = []
+        for c in cards:
+            p = c.get("provenance", {})
+            tag = f"Fig {p['figure']}, APOSD Ch {c.get('grounding', {}).get('chapter')}" if p.get("kind") == "cited" \
+                else "derived, not cited"
+            rows.append(f"- **{c['name']}** ({tag}) — {c['one_liner']}  \n  *Ask:* {c['reframes_question']}")
+        block = (
+            "\n## Frameworks to deploy\n"
+            "Deploy the author's own skimmable figures as tools. CITED cards are real book figures and "
+            "OUTRANK derived cards (which are labeled, never presented as a citation):\n"
+            + "\n".join(rows) + "\n\n(Cards + grounding in `frameworks/cards.jsonl`.)\n")
+        skill_text = re.sub(r"\n## Frameworks to deploy.*?(?=\n## |\Z)", "\n", skill_text, flags=re.S)
+        anchor = "## Example Invocation"
+        if anchor in skill_text:
+            return skill_text.replace(anchor, block + "\n" + anchor, 1)
+        return skill_text + block
     return skill_text  # no deterministic handler -> unchanged (would route to a model iterate step)
 
 
@@ -210,9 +232,11 @@ def main(cart, max_rounds=3):
             print(line)
         if r["found"]:
             print(f"    grounded in: \"{r['passage'][:110]}...\"")
-        before = {c["id"]: c["pass"] for c in craft.evaluate(skill_text, man, cart)}
-        skill_text = apply_fix(d, r, skill_text, man)
-        after = {c["id"]: c["pass"] for c in craft.evaluate(skill_text, man, cart)}
+        _eval = lambda t: {c["id"]: c["pass"] for c in
+                           list(craft.evaluate(t, man, cart)) + list(frameworks.evaluate(t, man, cart))}
+        before = _eval(skill_text)
+        skill_text = apply_fix(d, r, skill_text, man, cart)
+        after = _eval(skill_text)
         closed = before.get(d["id"]) is False and after.get(d["id"]) is True
         print(f"    fix applied; re-eval: {d['id']} {before.get(d['id'])} -> {after.get(d['id'])}"
               f"  {'[CLOSED]' if closed else '[still open]'}\n")

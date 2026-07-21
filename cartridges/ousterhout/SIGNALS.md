@@ -52,10 +52,16 @@ guarded, and driven.
 (book-gated, NOT-RUN loud when absent). Honest scope: C4a/C4b are a *lexical* proxy (divergence + reframe
 markers), not semantic stance — the calibrated judge is **parked** (`contrarian/` templates, Part D).
 
-## Future signals (wired the same way when built)
-- **Frameworks-as-tools (`engine/frameworks.py`)** — *S18* card grounded + schema-complete (**loop**:
-  retrieve each card's grounding), *S19* advisor deploys a relevant card (advisory / model-iterate).
-  Cited cards (real book figures) outrank derived cards, which must be labeled `provenance: derived, not cited`.
+## Framework signals (`engine/frameworks.py`) — the book's figures as tools
 
-When any of these lands, its `SIGNAL_IDS` are enumerated by `loop_coverage.py` and **must** appear in
-`signal_routes.ROUTES` and in this table, or CI blocks — the guard forces the wiring.
+| Signal | Gate | Route | How it closes |
+|---|---|---|---|
+| **S18** frameworks are taught | advisory | **loop** | the loop injects a "Frameworks to deploy" section from `frameworks/cards.jsonl` (cited cards first) ← *"deep and shallow modules"* |
+| **S19** frameworks are real | hard | verification-twin of **S18** | every cited card's figure is verbatim in the book + its probe resolves; every derived card is labeled `derived, not cited` and carries no figure; cited outrank derived |
+
+Cited cards are grounded in **real book figures** (4.1 deep/shallow, 3.1 tactical/strategic, 7.2
+pass-through→context, 9.3 method-split). Derived cards are supplementary and **must** be labeled so an
+agent never treats one as a citation.
+
+When a new evaluator lands, its `SIGNAL_IDS` are enumerated by `loop_coverage.py` and **must** appear in
+`signal_routes.ROUTES` and in this doc, or CI blocks — the guard forces the wiring.

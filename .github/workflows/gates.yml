@@ -49,6 +49,12 @@ jobs:
       - name: contrarian gate (advisor is worth listening to AND grounded)
         run: python3 engine/contrarian.py cartridges/ousterhout
 
+      - name: frameworks selftest (S18/S19 cited-vs-derived controls fire)
+        run: python3 engine/frameworks.py --selftest
+
+      - name: frameworks gate (cited cards map to real figures; derived are labeled)
+        run: python3 engine/frameworks.py cartridges/ousterhout
+
       - name: co-mutation guard selftest (governance logic is non-vacuous)
         run: python3 engine/comutation_guard.py cartridges/ousterhout --selftest
 

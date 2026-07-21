@@ -335,5 +335,10 @@
     "pairs": "contrarian/pairs.jsonl",
     "gate": "(4a OR 4b) AND grounded",
     "note": "deterministic lexical proxy; calibrated contrarian/reframe judge parked (contrarian/ templates)"
+  },
+  "frameworks": {
+    "cards": "frameworks/cards.jsonl",
+    "min_cards": 3,
+    "note": "cited cards (real book figures) outrank derived; derived must be labeled 'derived, not cited'"
   }
 }
