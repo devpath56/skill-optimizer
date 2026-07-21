@@ -153,22 +153,26 @@
         {
           "letter": "D",
           "principle": "Deep modules \u2014 a simple interface over a powerful implementation",
-          "ground_probe": "deep module"
+          "ground_probe": "deep module",
+          "home_chapter": 4
         },
         {
           "letter": "E",
           "principle": "Errors defined out of existence \u2014 redesign so the error case can't arise",
-          "ground_probe": "out of existence"
+          "ground_probe": "out of existence",
+          "home_chapter": 10
         },
         {
           "letter": "E",
           "principle": "Ease of reading over ease of writing \u2014 code and comments serve the reader",
-          "ground_probe": "ease of reading"
+          "ground_probe": "ease of reading",
+          "home_chapter": 13
         },
         {
           "letter": "P",
           "principle": "Pull complexity downward \u2014 absorb it into the module, not its users",
-          "ground_probe": "pull complexity"
+          "ground_probe": "pull complexity",
+          "home_chapter": 8
         }
       ],
       "note": "Memorable recall aid for a teaching agent; DEEP is the book's own central metaphor. Each letter must ground in the authoritative source (checked by S10) so the mnemonic is never fabricated."
