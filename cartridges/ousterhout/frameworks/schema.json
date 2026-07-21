@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Framework card — a skimmable, deployable tool for the advisor",
+  "description": "One line of frameworks/cards.jsonl. A framework card is a reusable diagram/heuristic the advisor deploys on a problem. CITED cards are grounded in a real book figure and outrank DERIVED cards, which must be labeled so an agent never treats a derived card as a book citation.",
+  "type": "object",
+  "required": ["id", "name", "kind", "one_liner", "structure", "when_to_deploy", "reframes_question", "provenance", "grounding", "related_principle", "skimmable"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {"type": "string"},
+    "name": {"type": "string"},
+    "kind": {"type": "string", "enum": ["diagram", "heuristic", "checklist", "curve", "tree"]},
+    "one_liner": {"type": "string"},
+    "structure": {"type": "string", "description": "the shape of the tool (axes, branches, steps)"},
+    "when_to_deploy": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "reframes_question": {"type": "string", "description": "the question the card makes the user ask"},
+    "provenance": {
+      "type": "object",
+      "required": ["kind", "note"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"type": "string", "enum": ["cited", "derived"]},
+        "figure": {"type": "string", "description": "e.g. '4.1' — REQUIRED for cited, FORBIDDEN for derived"},
+        "note": {"type": "string", "description": "derived cards MUST say 'derived, not cited'"}
+      }
+    },
+    "grounding": {
+      "type": "object",
+      "required": ["chapter", "verbatim_probe"],
+      "additionalProperties": false,
+      "properties": {
+        "chapter": {"type": "string"},
+        "verbatim_probe": {"type": "string", "description": "a short string that is VERBATIM in the source near the figure/principle"}
+      }
+    },
+    "related_principle": {"type": "string"},
+    "skimmable": {"type": "boolean"}
+  }
+}
