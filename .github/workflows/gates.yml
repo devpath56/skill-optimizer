@@ -43,6 +43,12 @@ jobs:
       - name: loop coverage (every gated signal is loop-driven or has a documented route)
         run: python3 engine/loop_coverage.py cartridges/ousterhout
 
+      - name: contrarian selftest (4a/4b + grounded controls fire)
+        run: python3 engine/contrarian.py --selftest
+
+      - name: contrarian gate (advisor is worth listening to AND grounded)
+        run: python3 engine/contrarian.py cartridges/ousterhout
+
       - name: co-mutation guard selftest (governance logic is non-vacuous)
         run: python3 engine/comutation_guard.py cartridges/ousterhout --selftest
 

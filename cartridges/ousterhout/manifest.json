@@ -330,5 +330,10 @@
       }
     ],
     "note": "RAGAS-style deterministic retrieval eval. precision_gold maps a query to its HOME chapter (from the book's TOC) so context_precision measures whether retrieval lands there vs an incidental mention. Recall reuses craft.tradeoff_decisions; faithfulness reuses voice.signature_quotes + grounding.anecdote_probes. Precision/faithfulness are book-gated (NOT-RUN when the licensed source is absent)."
+  },
+  "contrarian": {
+    "pairs": "contrarian/pairs.jsonl",
+    "gate": "(4a OR 4b) AND grounded",
+    "note": "deterministic lexical proxy; calibrated contrarian/reframe judge parked (contrarian/ templates)"
   }
 }

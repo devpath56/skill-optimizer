@@ -41,10 +41,18 @@ loop-drop failure — must not recur).
 twin that closes when its sibling's injected grounding is real. That is the whole spine — visible,
 guarded, and driven.
 
+## Contrarian signals (`engine/contrarian.py`) — worth listening to
+
+| Signal | Gate | Route | How it closes |
+|---|---|---|---|
+| **C4a** contrarian answer | advisory | **model-iterate** | the answer diverges from consensus + a reversal move; generative, so the loop flags and the model-iterate step authors it |
+| **C4b** reframe question | advisory | **model-iterate** | an interrogative that reframes (new framing vs consensus, tied to a principle); generative |
+
+`gate (per pair) = (C4a OR C4b) AND grounded`; **grounded** = the cited quote is verbatim in the source
+(book-gated, NOT-RUN loud when absent). Honest scope: C4a/C4b are a *lexical* proxy (divergence + reframe
+markers), not semantic stance — the calibrated judge is **parked** (`contrarian/` templates, Part D).
+
 ## Future signals (wired the same way when built)
-- **Contrarian (`engine/contrarian.py`)** — *4a* contrarian answer, *4b* reframe question. Both route
-  **model-iterate** (the loop cannot author a contrarian answer). Their cited anecdote/quote *grounding*
-  is loop-closable and split out. Parked v2: calibrated contrarian/reframe judges (doc-only templates).
 - **Frameworks-as-tools (`engine/frameworks.py`)** — *S18* card grounded + schema-complete (**loop**:
   retrieve each card's grounding), *S19* advisor deploys a relevant card (advisory / model-iterate).
   Cited cards (real book figures) outrank derived cards, which must be labeled `provenance: derived, not cited`.

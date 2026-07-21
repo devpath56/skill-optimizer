@@ -40,6 +40,9 @@ ROUTES = {
     "S12": {"route": "verification-twin", "twin_of": "S11", "why": "every signature quote is verbatim (S11)"},
     "S13": {"route": "verification-twin", "twin_of": "S11", "why": "voice-bar integrity — no platitude declared a quote (S11)"},
     "S15": {"route": "verification-twin", "twin_of": "S14", "why": "each trade-off case study is verbatim (S14)"},
+    # contrarian.py — the advisor's stance vs consensus (generative; the loop cannot author a contrarian answer)
+    "C4a": {"route": "model-iterate", "why": "a CONTRARIAN answer is generative; loop flags, model-iterate authors. Grounding of the cited quote is gate-verified, not loop-injected."},
+    "C4b": {"route": "model-iterate", "why": "a REFRAME question is generative; loop flags, model-iterate authors. Interrogative+framing checked deterministically; the answer is not."},
 }
 
 # Signals whose route is `loop` MUST have exactly these handler ids in loop.py (RETRIEVAL_QUERY + apply_fix).
