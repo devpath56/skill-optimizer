@@ -68,6 +68,10 @@
   .stage{padding:clamp(18px,3vw,30px);min-height:440px}
   .quote-you{color:var(--muted);font-style:italic;border-left:2px solid var(--line);
     padding:2px 0 2px 14px;margin:0 0 22px;font-size:15px}
+  .consensus{background:var(--panel-2);border:1px dashed var(--line);border-radius:10px;padding:11px 13px;margin:0 0 4px}
+  .consensus .ck{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .consensus p{margin:5px 0 0;color:var(--muted);font-size:14px}
+  .delta{color:var(--accent);font-size:12.5px;font-weight:700;letter-spacing:.02em;margin:9px 0 15px}
   .verdict{display:inline-flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--contra) 20%,var(--bg));
     color:var(--ink);border:1px solid color-mix(in srgb,var(--contra) 55%,var(--bg));
     border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:700;letter-spacing:.02em;margin-bottom:16px}
@@ -109,7 +113,7 @@
   <h1>The Ousterhout Advisor</h1>
   <p class="lede">A highly opinionated software-design guru you invoke when you're stuck. It doesn't
   validate your plan · it <em>reframes</em> it, cites its own principles and the book's real anecdotes,
-  and hands you a radically different way to see the problem.</p>
+  and hands you a radically different way to see the problem. Its worth is the <em>delta from consensus</em> · how far it pushes from the answer a stock model would give.</p>
   <p class="lede" style="color:var(--faint);font-size:15px">Every citation below is
   <strong style="color:var(--good)">verbatim-verified against <em>A Philosophy of Software Design</em></strong>
   by the pipeline that built this advisor · the aha is that the contrarian take is also <em>grounded</em>, never invented.</p>
@@ -148,7 +152,7 @@
 
 <script>
 const DATA = {
-  flags:{
+  flags:{consensus:"A REST endpoint per feature reads clean and cache-friendly. Give each flag its own route, version them, done. It's the idiomatic pattern.",
     you:"“We're building a feature-flag service. Each feature gets its own endpoint: GET /flag/dark-mode, GET /flag/new-checkout…”",
     verdict:"Shallow module",
     take:"You're optimizing the <b>wrong axis</b>. Each endpoint has near-zero logic behind a whole interface. You've maximized interface-per-unit-of-value, which is exactly backwards.",
@@ -159,7 +163,7 @@ const DATA = {
     reframe:"One endpoint returns <em>all</em> flags for a user; the server decides which apply. One deep module instead of N shallow ones.",
     ask:"What does the client actually need to know? Reduce <b>that</b> · before anyone writes the API contract."
   },
-  errors:{
+  errors:{consensus:"Add proper error handling: catch the 'already gone' case, return a clear 404, log it for observability, and write a test.",
     you:"“Deleting a record that's already gone throws an error and callers have to catch it. Let's add better error handling.”",
     verdict:"Don't handle it · define it out of existence",
     take:"More error handling is <b>more</b> complexity, not less. The move is to make the error case <b>impossible</b>, not survivable.",
@@ -170,7 +174,7 @@ const DATA = {
     reframe:"Redefine the operation so “already gone” <em>is</em> success. Delete becomes idempotent; the error path disappears.",
     ask:"Which of your exceptions could be designed away entirely, instead of caught in twelve places?"
   },
-  comments:{
+  comments:{consensus:"Push for self-documenting code (good names, small functions) and add comments where intent isn't obvious. The reviewers usually have a point.",
     you:"“The reviewers keep asking for more comments. But if the code were good it'd be self-documenting · right?”",
     verdict:"The seductive wrong answer",
     take:"“Self-documenting code” is a half-truth used to avoid writing. Code can't express what it doesn't contain · the <b>why</b>, and the decisions that live between modules.",
@@ -181,7 +185,7 @@ const DATA = {
     reframe:"Comment the <em>non-obvious</em>: intent, invariants, cross-module dependencies. Put the cross-cutting ones in one <code>designNotes</code> file.",
     ask:"For this module · what does a new reader need that the code physically cannot tell them?"
   },
-  tactical:{
+  tactical:{consensus:"If it passes tests and hits the deadline, ship it and file a refactor ticket. Perfect is the enemy of shipped.",
     you:"“It's gnarly but it passes tests. Let's ship and clean it up next quarter.”",
     verdict:"Tactical tornado",
     take:"“It works” is a <b>loan at compound interest</b>. Complexity is incremental · this one shortcut is fine; the pattern of shortcuts is how systems die.",
@@ -198,6 +202,8 @@ function render(k){
   const d=DATA[k];
   stage.innerHTML=`
     <p class="quote-you">${d.you}</p>
+    <div class="consensus"><span class="ck">Consensus · what a stock model says</span><p>${d.consensus}</p></div>
+    <div class="delta">↯ the advisor pushes hard off consensus · measured by the delta, not the confidence</div>
     <span class="verdict">⚡ ${d.verdict}</span>
     <p class="take">${d.take}</p>
     <div class="cites">
