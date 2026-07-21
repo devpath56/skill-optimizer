@@ -37,6 +37,12 @@ jobs:
       - name: craft negative control (--selftest must catch a degraded skill)
         run: python3 engine/craft.py cartridges/ousterhout --selftest
 
+      - name: loop-coverage selftest (CF-076 guard is non-vacuous)
+        run: python3 engine/loop_coverage.py --selftest
+
+      - name: loop coverage (every gated signal is loop-driven or has a documented route)
+        run: python3 engine/loop_coverage.py cartridges/ousterhout
+
       - name: co-mutation guard selftest (governance logic is non-vacuous)
         run: python3 engine/comutation_guard.py cartridges/ousterhout --selftest
 
