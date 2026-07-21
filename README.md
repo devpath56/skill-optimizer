@@ -149,6 +149,7 @@ python3 engine/craft.py     cartridges/ousterhout        # CRAFT axis: does SKIL
 python3 engine/craft.py     cartridges/ousterhout --json # machine-readable craft scorecard (for agents)
 python3 engine/ingest.py    cartridges/ousterhout        # INGEST: build the cited chunk index (retrievability)
 python3 engine/rag_eval.py  cartridges/ousterhout        # RAGAS-style retrieval bar (precision/recall/faithfulness)
+python3 engine/skill_lint.py cartridges/ousterhout        # FOUNDATION: frontmatter, name, description discoverability
 python3 engine/loop.py      cartridges/ousterhout        # PROGRESSIVE DRIVER: run the actual optimize loop
 ```
 
